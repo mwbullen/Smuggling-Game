@@ -3,9 +3,53 @@
 -- view1.lua
 --
 -----------------------------------------------------------------------------------------
-
+local widget = require "widget"
 local composer = require( "composer" )
+
 local scene = composer.newScene()
+
+local jobs = {}
+
+local function displayJobRow(event)
+	local row = event.row
+
+	local jobDesc = display.newText(row,jobs[row.index].origin.." to ".. jobs[row.index].destination,row.contentWidth/2, 0 ,nil ,20)
+	jobDesc:setFillColor( 0)	
+	jobDesc.y= 25
+	-- sceneGroup:insert(jobDesc)
+
+	
+
+	local secondsRemaining = jobs[row.index].eta - os.time()
+	if secondsRemaining > 0 then
+		local jobProgress = widget.newProgressView({left = 10, top = 50, width = 300 })
+		row:insert(jobProgress)
+
+		local totalJobSeconds = jobs[row.index].eta - jobs[row.index].starttime 
+		local elapsedSeconds = totalJobSeconds - secondsRemaining
+		local percentComplete = elapsedSeconds / totalJobSeconds
+
+		jobProgress:setProgress(percentComplete)
+	else
+		local jobReadyMsg = display.newText(row, "Ready for Customs",row.contentWidth/2, 50, nil, 15)	
+			jobReadyMsg:setFillColor(.0,.6,.0)
+
+	end
+	
+	
+	 -- sceneGroup:insert(jobProgress)
+
+	--add progress bar
+	--calculate time remaining
+end
+
+local function updateJobProgress()
+
+end
+
+local function selectJobRow(event)
+
+end
 
 function scene:create( event )
 	local sceneGroup = self.view
@@ -22,25 +66,38 @@ function scene:create( event )
 	bg:setFillColor( 1 )	-- white
 	
 	-- create some text
-	local title = display.newText( "Active Shipments", 0, 0, native.systemFont, 32 )
-	title:setFillColor( 0 )	-- black
-	title.x = display.contentWidth * 0.5
-	title.y = 125
 	
-	local newTextParams = { text = "Show Active Shipments here", 
-						x = 0, y = 0, 
-						width = 310, height = 310, 
-						font = native.systemFont, fontSize = 14, 
-						align = "center" }
-	local summary = display.newText( newTextParams )
-	summary:setFillColor( 0 ) -- black
-	summary.x = display.contentWidth * 0.5 + 10
-	summary.y = title.y + 215
 	
 	-- all objects must be added to group (e.g. self.view)
 	sceneGroup:insert( bg )
-	sceneGroup:insert( title )
-	sceneGroup:insert( summary )
+	
+	local tableView = widget.newTableView
+		{
+			-- height=300,
+			onRowRender = displayJobRow,
+			onRowTouch = selectJobRow,
+			-- top = 45
+			-- noLines = true			
+		}
+		sceneGroup:insert(tableView)
+
+		for row in db:nrows("select * from jobs")	do
+			jobs[#jobs+1] = 
+			{
+				id= row.Jobid,
+				agentId = row.AgentId,
+				Complete = row.Complete,
+				origin = row.Origin,
+				destination = row.Destination,
+				value = row.Value,
+				eta = row.ETA,
+				destinationRegion = row.DestinationRegion,
+				starttime = row.StartTime
+			}
+			
+			tableView:insertRow{ topPadding=10, bottomPadding=10, rowHeight = 70, rowColor = {default = {1, 0.980392 ,0.803922}}}
+		end
+
 end
 
 function scene:show( event )
@@ -54,6 +111,8 @@ function scene:show( event )
 		-- 
 		-- INSERT code here to make the scene come alive
 		-- e.g. start timers, begin animation, play audio, etc.
+
+		
 	end	
 end
 
@@ -68,6 +127,8 @@ function scene:hide( event )
 		-- e.g. stop timers, stop animation, unload sounds, etc.)
 	elseif phase == "did" then
 		-- Called when the scene is now off screen
+
+		composer.removeScene("scene_active", true)
 	end
 end
 
