@@ -44,11 +44,14 @@ local function displayJobRow(event)
 end
 
 local function updateJobProgress()
-
+	
 end
 
 local function selectJobRow(event)
-
+	for i=1,tableView.getNumRows(), 1
+	do
+		
+	end
 end
 
 function scene:create( event )
