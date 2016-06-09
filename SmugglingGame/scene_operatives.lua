@@ -54,11 +54,11 @@ local agents = {}
 local function displayAgentRow (event)
 	local row = event.row
 	
-	local agentNameTxt = display.newText(row, agents[row.index].name,row.contentWidth*.6, 0 ,nil ,20)
+	local agentNameTxt = display.newText(row, agents[row.index].name,row.contentWidth*.5, 0 ,nil ,20)
 	agentNameTxt:setFillColor(0);	
 	agentNameTxt.y= 20
 
-	local agentLevelTxt = display.newText(row, agents[row.index].level,row.contentWidth*.3, 0 ,nil ,14)
+	local agentLevelTxt = display.newText(row, agents[row.index].level,row.contentWidth*.2, 0 ,nil ,16)
 	agentLevelTxt:setFillColor(0)
 	agentLevelTxt.anchorX = 0;
 	agentLevelTxt.y= 40

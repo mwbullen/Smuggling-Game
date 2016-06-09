@@ -26,9 +26,10 @@ end
 
 local function confirmBtnClick(event) 
       --Create new shipment
+      createShipment(openContractID, agentId)
       composer.gotoScene("scene_active")
 
-      createShipment(openContractID, agentId)
+      
 end
 
 local function selectAgentClick(event)

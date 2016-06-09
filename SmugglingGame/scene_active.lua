@@ -10,6 +10,8 @@ local scene = composer.newScene()
 
 local jobs = {}
 
+local tableView = nil
+
 local function displayJobRow(event)
 	local row = event.row
 
@@ -47,8 +49,8 @@ local function updateJobProgress()
 	
 end
 
-local function selectJobRow(event)
-	for i=1,tableView.getNumRows(), 1
+local function selectJobRow(event)	
+	for i=1,tableView:getNumRows(), 1
 	do
 		
 	end
@@ -70,11 +72,11 @@ function scene:create( event )
 	
 	-- create some text
 	
-	
+	jobs = {}
 	-- all objects must be added to group (e.g. self.view)
 	sceneGroup:insert( bg )
 	
-	local tableView = widget.newTableView
+	 tableView = widget.newTableView
 		{
 			-- height=300,
 			onRowRender = displayJobRow,
