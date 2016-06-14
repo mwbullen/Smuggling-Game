@@ -15,9 +15,9 @@ local tableView = nil
 local function displayJobRow(event)
 	local row = event.row
 
-	local jobDesc = display.newText(row,jobs[row.index].origin.." to ".. jobs[row.index].destination,row.contentWidth/2, 0 ,nil ,20)
+	local jobDesc = display.newText(row,jobs[row.index].origin.." to ".. jobs[row.index].destination,10,25,nil ,20)
 	jobDesc:setFillColor( 0)	
-	jobDesc.y= 25
+	jobDesc.anchorX =0
 	-- sceneGroup:insert(jobDesc)
 
 	
@@ -50,10 +50,12 @@ local function updateJobProgress()
 end
 
 local function selectJobRow(event)	
-	for i=1,tableView:getNumRows(), 1
-	do
+	-- for i=1,tableView:getNumRows(), 1
+	-- do
 		
-	end
+	-- end
+
+	--Launch security form
 end
 
 function scene:create( event )

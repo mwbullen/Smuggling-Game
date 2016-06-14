@@ -97,6 +97,7 @@ function addRandomContract()
     local originCitynum = math.random(1, #cities)
     local originCityID = cities[originCitynum].cityID
     local originRegionID = cities[originCitynum].regionID
+    local originSecurity = cities[originCitynum].security
 
     local destCityNum = math.random(1, #cities)
     local destCityID =  cities[destCityNum].cityID
@@ -120,8 +121,11 @@ function addRandomContract()
          travelTime = row.BaseTime
     end
 
+    local contractValue = 100*travelTime*(destSecurity^2) * math.random(1, 2)
+    local contractRisk = destSecurity 
+
     -- print (travelTime)
-     local insertStr = "insert into OpenContracts (Origin, Destination, Value, Duration, Expiration, Risk) values ("..originCityID..", "..destCityID..","..100*travelTime*destSecurity..","..(travelTime*.5)..", "..7200+os.time()..", "..destSecurity..")"
+     local insertStr = "insert into OpenContracts (Origin, Destination, Value, Duration, Expiration, Risk) values ("..originCityID..", "..destCityID..","..contractValue..","..(travelTime*.5)..", "..7200+os.time()..", "..contractRisk..")"
 
      -- print (insertStr)
 

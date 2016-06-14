@@ -54,14 +54,18 @@ local agents = {}
 local function displayAgentRow (event)
 	local row = event.row
 	
-	local agentNameTxt = display.newText(row, agents[row.index].name,row.contentWidth*.5, 0 ,nil ,20)
+	local agentNameTxt = display.newText(row, agents[row.index].name,10, 25 ,nil ,20)
 	agentNameTxt:setFillColor(0);	
-	agentNameTxt.y= 20
-
-	local agentLevelTxt = display.newText(row, agents[row.index].level,row.contentWidth*.2, 0 ,nil ,16)
+	agentNameTxt.anchorX = 0
+	
+	local agentLevelTxt = display.newText(row, "lvl "..agents[row.index].level,12, 55 ,nil ,16)
 	agentLevelTxt:setFillColor(0)
 	agentLevelTxt.anchorX = 0;
-	agentLevelTxt.y= 40
+	
+	local agentStatusTxt = display.newText(row,"Laying low in Europe", display.contentWidth -50, 26, nil, 16)
+	agentStatusTxt:setFillColor(0,.5,0);
+	agentStatusTxt.anchorX =1
+
 end
 
 function scene:show( event )

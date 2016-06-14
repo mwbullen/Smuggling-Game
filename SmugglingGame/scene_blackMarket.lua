@@ -59,9 +59,9 @@ local function displayMarketRow (event)
 	-- row:setFillColor(144,195,212)
 
 	-- Route
-	local tripDesc = display.newText(row, openContracts[row.index].origin.." to "..openContracts[row.index].destination,row.contentWidth/2, 0 ,nil ,20)
+	local tripDesc = display.newText(row, openContracts[row.index].origin.." to "..openContracts[row.index].destination,10, 0 ,nil ,20)
 	tripDesc:setFillColor( 0)
-	-- tripDesc.anchorX = 0;
+	tripDesc.anchorX = 0;
 	tripDesc.y= 25
 
 	--Payment
@@ -116,7 +116,7 @@ function scene:show( event )
 		}
 		sceneGroup:insert(tableView)
 
-		for row in db:nrows("select openContractID, (select Name from Cities where CityID = Origin) Origin, (select Name from Cities where CityID = Destination) Destination, Value, Duration, Risk  from opencontracts")	do
+		for row in db:nrows("select openContractID, (select Name from Cities where CityID = Origin) Origin, (select Name from Cities where CityID = Destination) Destination, Value, Duration, Risk  from opencontracts order by Value desc")	do
 			openContracts[#openContracts+1] = 
 			{
 				id = row.OpenContractID,
