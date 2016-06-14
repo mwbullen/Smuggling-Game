@@ -11,7 +11,7 @@ display.setStatusBar( display.DefaultStatusBar )
 local widget = require "widget"
 local composer = require "composer"
 
-
+local contractLimit = 6
 local path = system.pathForFile("data.db", system.DocumentsDirectory)
  db = sqlite3.open(path)
 
@@ -59,6 +59,73 @@ function createShipment(openContractID, agentId)
 	db:exec(deleteStr)
 
 	print (deleteStr)
+end
+
+function deleteExpiredContracts()
+    local deleteStr = "delete from openContracts where expiration <"..os.time()
+    db:exec(deleteStr)
+end
+
+function createNewContracts()
+    local checkCount = "select count(*) contractCount from openContracts"
+
+    for row in db:nrows(checkCount) do
+        if row.contractCount < contractLimit then
+            for i=row.contractCount, contractLimit, 1 do
+                addRandomContract()
+            end
+        end
+    end
+end
+
+function addRandomContract()
+
+    -- `OpenContractID`    INTEGER PRIMARY KEY AUTOINCREMENT,
+    -- `Origin`    INTEGER NOT NULL,
+    -- `Destination`   INTEGER NOT NULL,
+    -- `Value` INTEGER DEFAULT 0,    
+    -- `Duration`  INTEGER NOT NULL DEFAULT 1,
+    -- `Expiration`    INTEGER,
+  
+
+    --get all cities 
+    local citySelectStr = "select * from Cities"
+
+    local cities = {}
+    for row in db:nrows(citySelectStr) do
+        cities[#cities+1] = 
+        {
+            cityID = row.CityID,
+            regionID = row.RegionID
+        }
+    end
+
+    --pick 2 random cities
+    local originCitynum = math.random(1, #cities)
+    local originCityID = cities[originCitynum].cityID
+    local originRegionID = cities[originCitynum].regionID
+
+    table.remove(cities, originCitynum)
+
+    local destCityNum = math.random(1, #cities)
+    local destCityID =  cities[destCityNum].cityID
+    local destRegionID = cities[destCityNum].regionID
+    
+    --get travel time from cities
+    local travelTimeSelectStr = "select BaseTime from RegionTravelTimes where (point1 = "..originRegionID.." and point2 = "..destRegionID..") or (point1 = "..destRegionID.." and point2 = "..originRegionID..")"
+
+    print (travelTimeSelectStr)
+    local travelTime = nil
+    for row in db:nrows(travelTimeSelectStr) do
+         travelTime = row.BaseTime
+    end
+
+     local insertStr = "insert into OpenContracts (Origin, Destination, Value, Duration, Expiration) values ("..originCityID..", "..destCityID..",1000,"..travelTime..", "..7200+os.time()..")"
+
+     print (insertStr)
+
+     db:exec(insertStr)
+        
 end
 
 function copyFile( srcName, srcPath, dstName, dstPath, overwrite )

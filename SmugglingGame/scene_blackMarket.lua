@@ -100,7 +100,9 @@ function scene:show( event )
 		-- 
 		-- INSERT code here to make the scene come alive
 		-- e.g. start timers, begin animation, play audio, etc.
-		
+		deleteExpiredContracts()
+		createNewContracts()
+
 		local tableView = widget.newTableView
 		{
 			-- height=300,
@@ -121,7 +123,7 @@ function scene:show( event )
 				durationHours = row.Duration
 			}
 
-			tableView:insertRow{ topPadding=10, bottomPadding=10, rowHeight = 70, rowColor = {default = {1, 0.980392 ,0.803922}}}
+		tableView:insertRow{ topPadding=10, bottomPadding=10, rowHeight = 70, rowColor = {default = {1, 0.980392 ,0.803922}}}
 		end
 	end	
 end
