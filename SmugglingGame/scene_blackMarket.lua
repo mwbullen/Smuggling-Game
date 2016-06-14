@@ -65,18 +65,22 @@ local function displayMarketRow (event)
 	tripDesc.y= 25
 
 	--Payment
-	local contractValueTxt = display.newText(row, "$"..openContracts[row.index].value, 300, 0, nil, 16)
+	local contractValueTxt = display.newText(row, "$"..openContracts[row.index].value, 300, 55, nil, 16)
 	contractValueTxt:setFillColor(0.133333, 0.545098 ,0.133333)
 	contractValueTxt.anchorX = row.contentWidth
-	contractValueTxt.y = 55
+	
 
 	--Risk
+	local riskTxt = display.newText(row,  openContracts[row.index].risk, 15, 55, nil, 14)
+	riskTxt.anchorX = 0
+	riskTxt:setFillColor(0.545098, 0, 0)
 
 	--Time
-	local contractTime = display.newText(row, openContracts[row.index].durationHours.."h", 150, 0, nil, 14)
+	local contractTime = display.newText(row, openContracts[row.index].durationHours.."h", 150, 55, nil, 14)
 	contractTime:setFillColor(0.545098, 0, 0)
 	contractTime.anchorX = 0
-	contractTime.y = 55	
+	
+
 end
 
 function selectMarketRow(event) 
@@ -112,15 +116,15 @@ function scene:show( event )
 		}
 		sceneGroup:insert(tableView)
 
-		for row in db:nrows("select * from opencontracts")	do
+		for row in db:nrows("select openContractID, (select Name from Cities where CityID = Origin) Origin, (select Name from Cities where CityID = Destination) Destination, Value, Duration, Risk  from opencontracts")	do
 			openContracts[#openContracts+1] = 
 			{
 				id = row.OpenContractID,
 				origin = row.Origin,
 				destination = row.Destination,
-				value= row.Value,
-				destinationRegion = row.DestinationRegion,
-				durationHours = row.Duration
+				value= row.Value,				
+				durationHours = row.Duration,
+				risk = row.Risk
 			}
 
 		tableView:insertRow{ topPadding=10, bottomPadding=10, rowHeight = 70, rowColor = {default = {1, 0.980392 ,0.803922}}}

@@ -86,7 +86,7 @@ function scene:create( event )
 		}
 		sceneGroup:insert(tableView)
 
-		for row in db:nrows("select * from jobs")	do
+		for row in db:nrows("select Jobid, AgentID, Complete,  (select Name from Cities where CityID = Origin) Origin, (select Name from Cities where CityID = Destination) Destination, Value, ETA, StartTime from Jobs")	do
 			jobs[#jobs+1] = 
 			{
 				id= row.Jobid,
@@ -95,8 +95,7 @@ function scene:create( event )
 				origin = row.Origin,
 				destination = row.Destination,
 				value = row.Value,
-				eta = row.ETA,
-				destinationRegion = row.DestinationRegion,
+				eta = row.ETA,				
 				starttime = row.StartTime
 			}
 			

@@ -48,7 +48,7 @@ end
 function createShipment(openContractID, agentId)
 	--insert into Jobs
 
-	local insertStr = "insert into Jobs(agentId, origin, destination, value, eta, DestinationRegion, starttime) select "..agentId..", origin, destination, value, (duration*3600) +"..os.time()..", DestinationRegion, "..os.time().." from OpenContracts where OpenContractid = "..openContractID
+	local insertStr = "insert into Jobs(agentId, origin, destination, value, eta,  starttime) select "..agentId..", origin, destination, value, (duration*3600) +"..os.time()..", "..os.time().." from OpenContracts where OpenContractid = "..openContractID
 
 	db:exec(insertStr)
 
@@ -56,7 +56,7 @@ function createShipment(openContractID, agentId)
 	
 	--delete from openContracts
 	local deleteStr = "delete from openContracts where openContractID = "..openContractID
-	db:exec(deleteStr)
+	 db:exec(deleteStr)
 
 	print (deleteStr)
 end
@@ -71,22 +71,14 @@ function createNewContracts()
 
     for row in db:nrows(checkCount) do
         if row.contractCount < contractLimit then
-            for i=row.contractCount, contractLimit, 1 do
+            for i=row.contractCount, contractLimit-1, 1 do
                 addRandomContract()
             end
         end
     end
 end
 
-function addRandomContract()
-
-    -- `OpenContractID`    INTEGER PRIMARY KEY AUTOINCREMENT,
-    -- `Origin`    INTEGER NOT NULL,
-    -- `Destination`   INTEGER NOT NULL,
-    -- `Value` INTEGER DEFAULT 0,    
-    -- `Duration`  INTEGER NOT NULL DEFAULT 1,
-    -- `Expiration`    INTEGER,
-  
+function addRandomContract()   
 
     --get all cities 
     local citySelectStr = "select * from Cities"
@@ -96,7 +88,8 @@ function addRandomContract()
         cities[#cities+1] = 
         {
             cityID = row.CityID,
-            regionID = row.RegionID
+            regionID = row.RegionID,
+            security = row.Security
         }
     end
 
@@ -105,24 +98,32 @@ function addRandomContract()
     local originCityID = cities[originCitynum].cityID
     local originRegionID = cities[originCitynum].regionID
 
-    table.remove(cities, originCitynum)
-
     local destCityNum = math.random(1, #cities)
     local destCityID =  cities[destCityNum].cityID
     local destRegionID = cities[destCityNum].regionID
+    local destSecurity = cities[destCityNum].security
     
+    --retry if same region selected twice
+    while destRegionID == originRegionID do
+         destCityNum = math.random(1, #cities)
+         destCityID =  cities[destCityNum].cityID
+         destRegionID = cities[destCityNum].regionID
+         local destSecurity = cities[destCityNum].security
+    end
+
     --get travel time from cities
     local travelTimeSelectStr = "select BaseTime from RegionTravelTimes where (point1 = "..originRegionID.." and point2 = "..destRegionID..") or (point1 = "..destRegionID.." and point2 = "..originRegionID..")"
 
-    print (travelTimeSelectStr)
+    -- print (travelTimeSelectStr)
     local travelTime = nil
     for row in db:nrows(travelTimeSelectStr) do
          travelTime = row.BaseTime
     end
 
-     local insertStr = "insert into OpenContracts (Origin, Destination, Value, Duration, Expiration) values ("..originCityID..", "..destCityID..",1000,"..travelTime..", "..7200+os.time()..")"
+    -- print (travelTime)
+     local insertStr = "insert into OpenContracts (Origin, Destination, Value, Duration, Expiration, Risk) values ("..originCityID..", "..destCityID..","..100*travelTime*destSecurity..","..(travelTime*.5)..", "..7200+os.time()..", "..destSecurity..")"
 
-     print (insertStr)
+     -- print (insertStr)
 
      db:exec(insertStr)
         
