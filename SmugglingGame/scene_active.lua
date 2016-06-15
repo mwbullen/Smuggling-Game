@@ -56,6 +56,8 @@ local function selectJobRow(event)
 	-- end
 
 	--Launch security form
+	local options = {params={Jobid = jobs[event.row.index].Jobid}}
+	composer.gotoScene("popup_enterCustoms", options)
 end
 
 function scene:create( event )
@@ -88,11 +90,12 @@ function scene:create( event )
 		}
 		sceneGroup:insert(tableView)
 
-		for row in db:nrows("select Jobid, AgentID, Complete,  (select Name from Cities where CityID = Origin) Origin, (select Name from Cities where CityID = Destination) Destination, Value, ETA, StartTime from Jobs")	do
+		for row in db:nrows("select Jobid, AgentID, (select AgentName from Agents where AgentId = AgentID) AgentName, Complete,  (select Name from Cities where CityID = Origin) Origin, (select Name from Cities where CityID = Destination) Destination, Value, ETA, StartTime from Jobs")	do
 			jobs[#jobs+1] = 
 			{
 				id= row.Jobid,
 				agentId = row.AgentId,
+				AgentName = AgentName,
 				Complete = row.Complete,
 				origin = row.Origin,
 				destination = row.Destination,
