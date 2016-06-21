@@ -5,12 +5,29 @@ local db = sqlite3.open(path)
 
 local contractLimit = 6
 
-function getCurrentCash() 
+----------Money operations
+function getCurrentCash() 	
 	for row in db:nrows("select CurrentMoney from PlayerStatus") do
 			return row.CurrentMoney
 	end
 end
 
+-- function addCash(newCash )
+-- 	db:exec("update PlayerStatus set CurrentMoney = CurrentMoney +"..newCash)
+-- end
+
+----------Shipment operations
+
+function completeShipment(Jobid)
+	--get cash value of shipment, add to current chash
+	db:exec("update PlayerStatus set CurrentMoney = CurrentMoney + (select Value from Jobs where JobId = "..Jobid..")")
+	db:exec("delete from Jobs where JobId="..Jobid)
+
+
+end
+
+
+----------
 function getAllOwnedAgents( )
 	local agents = {}
 
@@ -23,6 +40,23 @@ function getAllOwnedAgents( )
 			level= row.Level,
 			experience = row.Experience
 		}
+	end
+
+	return agents
+end
+
+function getAllAvailableAgents( )
+	local agents = {}
+
+	for row in db:nrows("select * from Agents where Owned = 1 and agentid not in (Select agentid from jobs)")	do
+			agents[#agents+1] = 
+			{
+				id = row.AgentId,
+				name = row.AgentName,
+				heat = row.Heat,
+				level= row.Level,
+				experience = row.Experience
+			}
 	end
 
 	return agents
@@ -44,15 +78,31 @@ function getAvailableContracts()
 	return openContracts
 end
 
+function getContract(openContractID)
+ for row in db:nrows("select openContractID, (select Name from Cities where CityID = Origin) Origin, (select Name from Cities where CityID = Destination) Destination, Value, Duration, Risk  from opencontracts where openContractID = "..openContractID) do         
+         local openContract = 
+            {  id = row.OpenContractID,
+               origin = row.Origin,
+               destination = row.Destination,
+               value= row.Value,
+               destinationRegion = row.DestinationRegion,
+               durationHours = row.Duration
+            }
+         return openContract
+  end
+end
+
+
+
 function getAllActiveJobs()
 	local jobs = {}
 
-	local selectStr = "select Jobid, AgentID, (select AgentName from Agents where AgentId = Jobs.AgentID) AgentName, Complete,  (select Name from Cities where CityID = Origin) Origin, (select Name from Cities where CityID = Destination) Destination, Value, ETA, StartTime from Jobs"
+	local selectStr = "select JobId, AgentID, (select AgentName from Agents where AgentId = Jobs.AgentID) AgentName, (Select Heat from Agents where AgentId = Jobs.AgentID) Heat, Complete,  (select Name from Cities where CityID = Origin) Origin, (select Name from Cities where CityID = Destination) Destination, Value, ETA, StartTime from Jobs"
 
 		for row in db:nrows(selectStr)	do
 			jobs[#jobs+1] = 
 			{
-				id= row.Jobid,
+				Jobid= row.JobId,
 				agentId = row.AgentId,
 				AgentName = row.AgentName,
 				Complete = row.Complete,
@@ -60,7 +110,8 @@ function getAllActiveJobs()
 				destination = row.Destination,
 				value = row.Value,
 				eta = row.ETA,				
-				starttime = row.StartTime
+				starttime = row.StartTime,
+				agentHeat = row.Heat
 			}
 		end
 
@@ -111,19 +162,6 @@ function createNewContracts()
     end
 end
 
-function getContract(openContractID)
- for row in db:nrows("select * from opencontracts where openContractID = "..openContractID) do         
-         local openContract = 
-            {  id = row.OpenContractID,
-               origin = row.Origin,
-               destination = row.Destination,
-               value= row.Value,
-               destinationRegion = row.DestinationRegion,
-               durationHours = row.Duration
-            }
-         return openContract
-  end
-end
 
 function addRandomContract()   
 
@@ -165,7 +203,7 @@ function addRandomContract()
     -- print (travelTimeSelectStr)
     local travelTime = nil
     for row in db:nrows(travelTimeSelectStr) do
-         travelTime = row.BaseTime
+         travelTime = row.BaseTime /100	--REduce time for testing
     end
 
     local contractValue = 100*travelTime*(destSecurity^2) * math.random(1, 2)

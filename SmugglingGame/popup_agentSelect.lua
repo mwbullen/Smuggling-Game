@@ -3,7 +3,7 @@
 -- scene_operatives.lua
 --
 -----------------------------------------------------------------------------------------
-
+require("functions")
 
 local widget = require "widget"
 
@@ -107,20 +107,12 @@ function scene:show( event )
 		}
 		sceneGroup:insert(tableView)
 
-		for row in db:nrows("select * from Agents where Owned = 1 and agentid not in (Select agentid from jobs)")	do
-			agents[#agents+1] = 
-			{
-				id = row.AgentId,
-				name = row.AgentName,
-				heat = row.Heat,
-				level= row.Level,
-				experience = row.Experience
-			}
+		agents = getAllAvailableAgents()
 
-			
+		for i = 1, #agents, 1 do
 			tableView:insertRow{ topPadding=10, bottomPadding=10, rowHeight = 70, rowColor = {default = {.678431, 0.847059,0.901961}}}
 		end
-
+		
 
 	end	
 end

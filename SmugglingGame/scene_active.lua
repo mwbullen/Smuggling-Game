@@ -16,18 +16,22 @@ local tableView = nil
 local function displayJobRow(event)
 	local row = event.row
 
-	local jobDesc = display.newText(row,jobs[row.index].origin.." to ".. jobs[row.index].destination,row.contentWidth-10,25,nil ,18)
-	jobDesc:setFillColor( 0)	
-	jobDesc.anchorX =1
-	-- sceneGroup:insert(jobDesc)
+	-- local jobDesc = display.newText(row,jobs[row.index].origin.." to ".. jobs[row.index].destination,row.contentWidth/2,55,nil ,12)
+	-- jobDesc:setFillColor( 0)	
+	-- jobDesc.anchorX =.5
 
-	local agentNameTxt = display.newText(row, jobs[row.index].AgentName, 10, 25, nil, 20)
+
+	local agentNameTxt = display.newText(row, jobs[row.index].AgentName, 10, 20, nil, 18)
 	agentNameTxt.anchorX =0 
 	agentNameTxt:setFillColor(0)
 
+	local agentHeat = display.newText(row, jobs[row.index].agentHeat, display.contentWidth*.9, 20, nil, 16)
+	agentHeat:setFillColor(.75,0,0)
+	
+
 	local secondsRemaining = jobs[row.index].eta - os.time()
 	if secondsRemaining > 0 then
-		local jobProgress = widget.newProgressView({left = 10, top = 50, width = 300 })
+		local jobProgress = widget.newProgressView({left = 20, top = 40, width = 250 })
 		row:insert(jobProgress)
 
 		local totalJobSeconds = jobs[row.index].eta - jobs[row.index].starttime 
@@ -35,9 +39,23 @@ local function displayJobRow(event)
 		local percentComplete = elapsedSeconds / totalJobSeconds
 
 		jobProgress:setProgress(percentComplete)
+
+		local remainingTimeTxt = display.newText(row,math.round(secondsRemaining/60,2.2).." min", display.contentWidth - 30, 45, nil, 12)
+		remainingTimeTxt:setFillColor(0)
+
+		local originTxt = display.newText(row,jobs[row.index].origin, 20, 55, nil, 12)
+		originTxt:setFillColor(0)
+		originTxt.anchorX =0
+
+		local destTxt = display.newText(row,jobs[row.index].destination, 270, 55, nil, 12)
+		destTxt:setFillColor(0)
+		destTxt.anchorX =1
+	
+
+
 	else
 		local jobReadyMsg = display.newText(row, "Ready for Customs",row.contentWidth/2, 50, nil, 15)	
-			jobReadyMsg:setFillColor(.0,.6,.0)
+		jobReadyMsg:setFillColor(.0,.6,.0)
 
 	end
 	
@@ -62,7 +80,15 @@ local function selectJobRow(event)
 	-- local options = {params={Jobid = jobs[event.row.index].Jobid}}
 	-- composer.gotoScene("popup_enterCustoms", options)
 
-	--Complete run, get paid
+	--Confirm ready for customs, if so complete run and get paid
+	local secondsRemaining = jobs[event.row.index].eta - os.time()
+	if secondsRemaining <= 0 then
+				
+		completeShipment(jobs[event.row.index].Jobid)	
+		updateStatusBar()
+		composer.gotoScene("scene_active")
+	end
+
 end
 
 function scene:create( event )

@@ -27,7 +27,7 @@ end
 local function confirmBtnClick(event) 
       --Create new shipment
       createShipment(openContractID, agentId)
-      composer.gotoScene("scene_active")
+      composer.gotoScene("scene_blackMarket")
 
       
 end
@@ -46,17 +46,17 @@ function scene:create( event )
    -- Initialize the scene here.
    -- Example: add display objects to "sceneGroup", add touch listeners, etc.
 
-   -- local bg = display.newRect( 0, 0, display.contentWidth, display.contentHeight )
-   -- bg.anchorX = 0
-   -- bg.anchorY = 0
-   -- -- bg:setFillColor( 1 )
-   -- sceneGroup:insert(bg)
+   local bg = display.newRect( 0, 0, display.contentWidth, display.contentHeight )
+   bg.anchorX = 0
+   bg.anchorY = 0
+    bg:setFillColor( 0,.24,0 )
+   sceneGroup:insert(bg)
    openContractID = event.params.openContractID
    agentId = event.params.agentId
 
    openContract = getContract(openContractID)
 
-   local tripItintxt = display.newText(openContract.origin.." to "..openContract.destination, 150, 20, native.systemFont, 32)
+   local tripItintxt = display.newText(openContract.origin.." to "..openContract.destination, 150, 20, native.systemFont, 22)
    sceneGroup:insert(tripItintxt)
 
    local tripTimetxt = display.newText("Time: "..openContract.durationHours.."h", 150, 60,native.systemFont, 16)
@@ -69,12 +69,14 @@ function scene:create( event )
    if agentId == nil then        
    else
       agentSelecttext = getAgentName(agentId)
-   end
 
-   local confirmBtm = display.newText( "Do It", 0, 350, native.systemFont, 32 )
+         local confirmBtm = display.newText( "Confirm", 0, 350, native.systemFont, 32 )
    confirmBtm:addEventListener("tap", confirmBtnClick)
    confirmBtm.x = 200
    sceneGroup:insert(confirmBtm)
+   end
+
+
 
    
 

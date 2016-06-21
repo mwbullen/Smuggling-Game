@@ -12,6 +12,7 @@ display.setStatusBar( display.DefaultStatusBar )
 local widget = require "widget"
 local composer = require "composer"
 
+local statusBarArea
 
 local path = system.pathForFile("data.db", system.DocumentsDirectory)
  db = sqlite3.open(path)
@@ -34,8 +35,10 @@ local function onFourthView( event )
 	composer.showOverlay( "scene_blackMarket",{isModal = true} )
 end
 --------------
-local function updateStatusBar() 
-    
+
+local cashTxt
+function updateStatusBar() 
+   cashTxt.text = "$ "..getCurrentCash()
 end
 
 -----------------
@@ -55,16 +58,21 @@ local tabBar = widget.newTabBar{
 	buttons = tabButtons
 }
 
-statusBarGroup = display.newGroup()
+    statusBarGroup = display.newGroup()
 
-local statusBarArea = display.newRect(0, display.contentHeight - 65, display.contentWidth, 35)
-statusBarArea.anchorX= 0
-statusBarArea:setFillColor(.4,.4,.4)
+    statusBarArea = display.newRect(0, display.contentHeight - 65, display.contentWidth, 35)
+    statusBarArea.anchorX= 0
+    statusBarArea:setFillColor(.4,.4,.4)
 
-statusBarGroup:insert(statusBarArea)
+    statusBarGroup:insert(statusBarArea)
+
+    
+    cashTxt = display.newText( "$ "..getCurrentCash(),display.contentWidth-20, display.contentHeight - 65 , nil, 24)
+    cashTxt.anchorX = 1
+    cashTxt:setFillColor(1)
+    statusBarGroup:insert(cashTxt)
 
 
-
--- local cashTxt  = display.newText()
 onFirstView()	-- invoke first tab button's onPress event manually
 
+updateStatusBar()
