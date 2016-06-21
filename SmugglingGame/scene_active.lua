@@ -25,7 +25,7 @@ local function displayJobRow(event)
 	agentNameTxt.anchorX =0 
 	agentNameTxt:setFillColor(0)
 
-	local agentHeat = display.newText(row, jobs[row.index].agentHeat, display.contentWidth*.9, 20, nil, 16)
+	local agentHeat = display.newText(row, jobs[row.index].agentHeat.."/"..jobs[row.index].agentMaxHeat, display.contentWidth*.9, 20, nil, 16)
 	agentHeat:setFillColor(.75,0,0)
 	
 

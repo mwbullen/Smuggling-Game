@@ -97,7 +97,7 @@ end
 function getAllActiveJobs()
 	local jobs = {}
 
-	local selectStr = "select JobId, AgentID, (select AgentName from Agents where AgentId = Jobs.AgentID) AgentName, (Select Heat from Agents where AgentId = Jobs.AgentID) Heat, Complete,  (select Name from Cities where CityID = Origin) Origin, (select Name from Cities where CityID = Destination) Destination, Value, ETA, StartTime from Jobs"
+	local selectStr = "select JobId, AgentID, (select AgentName from Agents where AgentId = Jobs.AgentID) AgentName, (Select Heat from Agents where AgentId = Jobs.AgentID) Heat, (select maxHeat from Agents where Agentid = Jobs.AgentID ) maxHeat,  (select Name from Cities where CityID = Origin) Origin, (select Name from Cities where CityID = Destination) Destination, Value, ETA, StartTime from Jobs"
 
 		for row in db:nrows(selectStr)	do
 			jobs[#jobs+1] = 
@@ -111,7 +111,8 @@ function getAllActiveJobs()
 				value = row.Value,
 				eta = row.ETA,				
 				starttime = row.StartTime,
-				agentHeat = row.Heat
+				agentHeat = row.Heat,
+				agentMaxHeat = row.maxHeat
 			}
 		end
 
