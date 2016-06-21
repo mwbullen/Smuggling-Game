@@ -6,6 +6,7 @@
 
 
 local widget = require "widget"
+require("functions")
 
 local path = system.pathForFile("data.db", system.DocumentsDirectory)
 local db = sqlite3.open(path)
@@ -62,10 +63,8 @@ local function displayAgentRow (event)
 	agentLevelTxt:setFillColor(0)
 	agentLevelTxt.anchorX = 0;
 	
-	local agentStatusTxt = display.newText(row,"Laying low in Europe", row.contentWidth/2, 50, nil, 15)
-	agentStatusTxt:setFillColor(0,.5,0);
-	-- agentStatusTxt.anchorX =1
-
+	local agentStatusTxt = display.newText(row,"", row.contentWidth/2, 50, nil, 15)
+	agentStatusTxt:setFillColor(0,.5,0);	
 end
 
 function scene:show( event )
@@ -88,17 +87,10 @@ function scene:show( event )
 		}
 		sceneGroup:insert(tableView)
 
-		for row in db:nrows("select * from Agents where Owned = 1")	do
-			agents[#agents+1] = 
-			{
-				id = row.AgentId,
-				name = row.AgentName,
-				heat = row.Heat,
-				level= row.Level,
-				experience = row.Experience
-			}
+		agents = getAllOwnedAgents()
 
-			
+		-- for row in db:nrows("select * from Agents where Owned = 1")	do
+		for index, value in	ipairs (agents) do
 			tableView:insertRow{ topPadding=10, bottomPadding=10, rowHeight = 70, rowColor = {default = {.678431, 0.847059,0.901961}}}
 		end
 

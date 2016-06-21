@@ -116,19 +116,12 @@ function scene:show( event )
 		}
 		sceneGroup:insert(tableView)
 
-		for row in db:nrows("select openContractID, (select Name from Cities where CityID = Origin) Origin, (select Name from Cities where CityID = Destination) Destination, Value, Duration, Risk  from opencontracts order by Value desc")	do
-			openContracts[#openContracts+1] = 
-			{
-				id = row.OpenContractID,
-				origin = row.Origin,
-				destination = row.Destination,
-				value= row.Value,				
-				durationHours = row.Duration,
-				risk = row.Risk
-			}
+		openContracts = getAvailableContracts()
 
-		tableView:insertRow{ topPadding=10, bottomPadding=10, rowHeight = 70, rowColor = {default = {1, 0.980392 ,0.803922}}}
-		end
+		for i=1, #openContracts, 1 do
+			tableView:insertRow{ topPadding=10, bottomPadding=10, rowHeight = 70, rowColor = {default = {1, 0.980392 ,0.803922}}}
+		end	
+		
 	end	
 end
 
@@ -143,7 +136,7 @@ function scene:hide( event )
 		-- e.g. stop timers, stop animation, unload sounds, etc.)
 	elseif phase == "did" then
 		-- Called when the scene is now off screen
-		
+		composer.removeScene("scene_blackMarket", true)
 	end
 end
 

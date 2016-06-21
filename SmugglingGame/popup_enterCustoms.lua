@@ -38,14 +38,28 @@ local function selectAgentClick(event)
    composer.gotoScene("popup_agentSelect", options)
 end
 
+local function backBtnClick(event)          
+   print"create shipment back"
+      composer.gotoScene("scene_active")      
+end
+
+local function getRandomSecurityscore()
+   return math.random(1,100)
+end
+
 -- "scene:create()"
 function scene:create( event )
 
    local sceneGroup = self.view
  
+      local bg = display.newRect( 0, 0, display.contentWidth, display.contentHeight )
+   bg.anchorX = 0
+   bg.anchorY = 0
+   bg:setFillColor( 1, 0.980392 ,0.803922) 
+   sceneGroup:insert(bg)
    JobId = event.params.JobId
    
-   local selectStr = "select Jobid, AgentID, (select AgentName from Agents where AgentId = AgentID) AgentName, Complete,  (select Name from Cities where CityID = Origin) Origin, (select Name from Cities where CityID = Destination) Destination, Value, ETA, StartTime from Jobs"
+   local selectStr = "select Jobid, AgentID, (select AgentName from Agents where AgentId = AgentID) AgentName, Complete,  (select Name from Cities where CityID = Origin) Origin, (select Name from Cities where CityID = Destination) Destination, Value, ETA, StartTime, (select Security from Cities where CityID = Destination) security, (select heat from Agents where Agentid = AgentID) agentHeat from Jobs"
 
       for row in db:nrows(selectStr)   do
          Job = 
@@ -58,43 +72,47 @@ function scene:create( event )
             destination = row.Destination,
             value = row.Value,
             eta = row.ETA,          
-            starttime = row.StartTime
+            starttime = row.StartTime, 
+            security = row.security
          }
    
-      
-      -- local tripItintxt = display.newText(openContract.origin.." to "..openContract.destination, 150, 20, native.systemFont, 32)
-      -- sceneGroup:insert(tripItintxt)
+         local cityText = display.newText(sceneGroup,Job.destination, display.contentWidth/2, 30, nil, 40)
+         cityText:setFillColor(0)
+         
+         local backBtn = display.newText( "Back", 0, 400, native.systemFont, 32 )
+         backBtn:addEventListener("tap", backBtnClick)
+         backBtn.x = 75
+         backBtn:setFillColor(0)
+         sceneGroup:insert(backBtn)
 
-      -- local tripTimetxt = display.newText("Time: "..openContract.durationHours.."h", 150, 60,native.systemFont, 16)
-      -- sceneGroup:insert(tripTimetxt)      
+         -- local agentInfoTxt = display.newText({
+         --    text = 
+         --    })
 
-      
-      -- local agentSelecttext = "Select Agent"
+         local securityLevel = display.newText({
+            text = "Security level:  "..Job.security,            
+            x = display.contentWidth*.5,
+            y = 75,
+            parent = sceneGroup,
+            font = nil,
+            fontSize = 25
+          })
+         securityLevel:setFillColor(0)
+         sceneGroup:insert(securityLevel)
 
-      
-      -- if agentId == nil then        
-      -- else
-      --    agentSelecttext = getAgentName(agentId)
 
-      --    local confirmBtm = display.newText( "Do It", 0, 400, native.systemFont, 32 )
-      -- confirmBtm:addEventListener("tap", confirmBtnClick)
-      -- confirmBtm.x = 200
-      -- sceneGroup:insert(confirmBtm)
+         local securityRoll = getRandomSecurityscore()
 
-      -- end
+         local securityRolltxt = display.newText({
+            text = "Current Security:  "..securityRoll,
+            x = display.contentWidth*.5,
+            y= 125, 
+            parent = sceneGroup,
+            font = nil,
+            fontSize = 25
+            })
 
-      -- local selectAgent = display.newText(agentSelecttext, 150, 150, native.systemFont, 24 )
-      
-
-      -- sceneGroup:insert(selectAgent)    
-      -- selectAgent:addEventListener("tap", selectAgentClick)  
-
-      -- local backBtn = display.newText( "Back", 0, 400, native.systemFont, 32 )
-      -- backBtn:addEventListener("tap", backBtnClick)
-      -- backBtn.x = 75
-      -- sceneGroup:insert(backBtn)
-
-      
+         securityRolltxt:setFillColor(.75,0,0)         
       end
 end
 

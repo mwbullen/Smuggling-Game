@@ -54,52 +54,43 @@ function scene:create( event )
    openContractID = event.params.openContractID
    agentId = event.params.agentId
 
-   for row in db:nrows("select * from opencontracts where openContractID = "..openContractID) do
-         print "record found"
-         local openContract = 
-            {  id = row.OpenContractID,
-               origin = row.Origin,
-               destination = row.Destination,
-               value= row.Value,
-               destinationRegion = row.DestinationRegion,
-               durationHours = row.Duration
-            }
-      
-      
-      local tripItintxt = display.newText(openContract.origin.." to "..openContract.destination, 150, 20, native.systemFont, 32)
-      sceneGroup:insert(tripItintxt)
+   openContract = getContract(openContractID)
 
-      local tripTimetxt = display.newText("Time: "..openContract.durationHours.."h", 150, 60,native.systemFont, 16)
-      sceneGroup:insert(tripTimetxt)      
+   local tripItintxt = display.newText(openContract.origin.." to "..openContract.destination, 150, 20, native.systemFont, 32)
+   sceneGroup:insert(tripItintxt)
 
-      
-      local agentSelecttext = "Select Agent"
+   local tripTimetxt = display.newText("Time: "..openContract.durationHours.."h", 150, 60,native.systemFont, 16)
+   sceneGroup:insert(tripTimetxt)      
 
-      
-      if agentId == nil then        
-      else
-         agentSelecttext = getAgentName(agentId)
+   
+   local agentSelecttext = "Select Agent"
 
-         local confirmBtm = display.newText( "Do It", 0, 400, native.systemFont, 32 )
-      confirmBtm:addEventListener("tap", confirmBtnClick)
-      confirmBtm.x = 200
-      sceneGroup:insert(confirmBtm)
+   
+   if agentId == nil then        
+   else
+      agentSelecttext = getAgentName(agentId)
+   end
 
-      end
+   local confirmBtm = display.newText( "Do It", 0, 350, native.systemFont, 32 )
+   confirmBtm:addEventListener("tap", confirmBtnClick)
+   confirmBtm.x = 200
+   sceneGroup:insert(confirmBtm)
 
-      local selectAgent = display.newText(agentSelecttext, 150, 150, native.systemFont, 24 )
-      
+   
 
-      sceneGroup:insert(selectAgent)    
-      selectAgent:addEventListener("tap", selectAgentClick)  
+   local selectAgent = display.newText(agentSelecttext, 150, 150, native.systemFont, 24 )
+   
 
-      local backBtn = display.newText( "Back", 0, 400, native.systemFont, 32 )
-      backBtn:addEventListener("tap", backBtnClick)
-      backBtn.x = 75
-      sceneGroup:insert(backBtn)
+   sceneGroup:insert(selectAgent)    
+   selectAgent:addEventListener("tap", selectAgentClick)  
+
+   local backBtn = display.newText( "Back", 0, 350, native.systemFont, 32 )
+   backBtn:addEventListener("tap", backBtnClick)
+   backBtn.x = 75
+   sceneGroup:insert(backBtn)
 
       
-      end
+      
 end
 
 -- "scene:show()"

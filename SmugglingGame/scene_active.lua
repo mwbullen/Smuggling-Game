@@ -3,6 +3,7 @@
 -- view1.lua
 --
 -----------------------------------------------------------------------------------------
+require("functions")
 local widget = require "widget"
 local composer = require( "composer" )
 
@@ -15,12 +16,14 @@ local tableView = nil
 local function displayJobRow(event)
 	local row = event.row
 
-	local jobDesc = display.newText(row,jobs[row.index].origin.." to ".. jobs[row.index].destination,10,25,nil ,20)
+	local jobDesc = display.newText(row,jobs[row.index].origin.." to ".. jobs[row.index].destination,row.contentWidth-10,25,nil ,18)
 	jobDesc:setFillColor( 0)	
-	jobDesc.anchorX =0
+	jobDesc.anchorX =1
 	-- sceneGroup:insert(jobDesc)
 
-	
+	local agentNameTxt = display.newText(row, jobs[row.index].AgentName, 10, 25, nil, 20)
+	agentNameTxt.anchorX =0 
+	agentNameTxt:setFillColor(0)
 
 	local secondsRemaining = jobs[row.index].eta - os.time()
 	if secondsRemaining > 0 then
@@ -56,8 +59,10 @@ local function selectJobRow(event)
 	-- end
 
 	--Launch security form
-	local options = {params={Jobid = jobs[event.row.index].Jobid}}
-	composer.gotoScene("popup_enterCustoms", options)
+	-- local options = {params={Jobid = jobs[event.row.index].Jobid}}
+	-- composer.gotoScene("popup_enterCustoms", options)
+
+	--Complete run, get paid
 end
 
 function scene:create( event )
@@ -74,13 +79,12 @@ function scene:create( event )
 	bg.anchorY = 0
 	bg:setFillColor( 1 )	-- white
 	
-	-- create some text
 	
-	jobs = {}
+	
 	-- all objects must be added to group (e.g. self.view)
 	sceneGroup:insert( bg )
 	
-	 tableView = widget.newTableView
+	tableView = widget.newTableView
 		{
 			-- height=300,
 			onRowRender = displayJobRow,
@@ -88,24 +92,15 @@ function scene:create( event )
 			-- top = 45
 			-- noLines = true			
 		}
-		sceneGroup:insert(tableView)
+	sceneGroup:insert(tableView)
 
-		for row in db:nrows("select Jobid, AgentID, (select AgentName from Agents where AgentId = AgentID) AgentName, Complete,  (select Name from Cities where CityID = Origin) Origin, (select Name from Cities where CityID = Destination) Destination, Value, ETA, StartTime from Jobs")	do
-			jobs[#jobs+1] = 
-			{
-				id= row.Jobid,
-				agentId = row.AgentId,
-				AgentName = AgentName,
-				Complete = row.Complete,
-				origin = row.Origin,
-				destination = row.Destination,
-				value = row.Value,
-				eta = row.ETA,				
-				starttime = row.StartTime
-			}
-			
-			tableView:insertRow{ topPadding=10, bottomPadding=10, rowHeight = 70, rowColor = {default = {1, 0.980392 ,0.803922}}}
-		end
+	jobs = getAllActiveJobs()
+
+	for index, value in ipairs(jobs) do
+		tableView:insertRow{ topPadding=10, bottomPadding=10, rowHeight = 70, rowColor = {default = {1, 0.980392 ,0.803922}}}
+	end
+
+		
 
 end
 
