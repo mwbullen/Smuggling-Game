@@ -8,7 +8,7 @@ local composer = require( "composer" )
 local scene = composer.newScene()
 
 
-local Job = {}
+local Job
 ---------------------------------------------------------------------------------
 -- All code outside of the listener functions will only be executed ONCE
 -- unless "composer.removeScene()" is called.
@@ -28,7 +28,6 @@ local function confirmBtnClick(event)
       --Create new shipment
       createShipment(openContractID, agentId)
       composer.gotoScene("scene_active")
-
       
 end
 
@@ -52,68 +51,74 @@ function scene:create( event )
 
    local sceneGroup = self.view
  
-      local bg = display.newRect( 0, 0, display.contentWidth, display.contentHeight )
+   
+   local bg = display.newRect( 0, 0, display.contentWidth, display.contentHeight )
    bg.anchorX = 0
    bg.anchorY = 0
    bg:setFillColor( 1, 0.980392 ,0.803922) 
    sceneGroup:insert(bg)
-   JobId = event.params.JobId
+
+   JobId = event.params.Jobid
+   -- print("jobid")
+   -- print(JobId)
+   Job = getJobInfo(JobId)
+   local cityText = display.newText(sceneGroup,Job.destination, display.contentWidth/2, 30, nil, 40)
+   cityText:setFillColor(0)
    
-   local selectStr = "select Jobid, AgentID, (select AgentName from Agents where AgentId = AgentID) AgentName, Complete,  (select Name from Cities where CityID = Origin) Origin, (select Name from Cities where CityID = Destination) Destination, Value, ETA, StartTime, (select Security from Cities where CityID = Destination) security, (select heat from Agents where Agentid = AgentID) agentHeat from Jobs"
+   -- local backBtn = display.newText( "Back", 0, 350, native.systemFont, 32 )
+   -- backBtn:addEventListener("tap", backBtnClick)
+   -- backBtn.x = 75
+   -- backBtn:setFillColor(0)
+   -- sceneGroup:insert(backBtn)
 
-      for row in db:nrows(selectStr)   do
-         Job = 
-         {
-            id= row.Jobid,
-            agentId = row.AgentId,
-            AgentName = AgentName,
-            Complete = row.Complete,
-            origin = row.Origin,
-            destination = row.Destination,
-            value = row.Value,
-            eta = row.ETA,          
-            starttime = row.StartTime, 
-            security = row.security
-         }
+   -- local agentInfoTxt = display.newText({
+   --    text = 
+   --    })
+
+   local securityLevel = display.newText({
+      text = "Security level:  "..Job.security,            
+      x = display.contentWidth*.5,
+      y = 75,
+      parent = sceneGroup,
+      font = nil,
+      fontSize = 25
+    })
+   securityLevel:setFillColor(0)
+   sceneGroup:insert(securityLevel)
+
+   local agentNameTxt = display.newText(Job.AgentName, 10, 150, nil, 18)
+   agentNameTxt.anchorX =0
+   agentNameTxt:setFillColor(0)
+   sceneGroup:insert(agentNameTxt)
+
+   local agentHeatText = display.newText(Job.AgentHeat.."/"..Job.AgentMaxHeat, display.contentWidth-10, 150, nil, 16)
+   agentHeatText.anchorX = 1
+   agentHeatText:setFillColor(.75,0,0)
+   sceneGroup:insert(agentHeatText)
+
+
+   local securityLbl = display.newText("Security check", 10, 175, nil, 18)
+   securityLbl.anchorX =0
+   securityLbl:setFillColor(.75,0,0)
+   sceneGroup:insert(securityLbl)
+
+   local securityRoll = getRandomSecurityscore()
+
+   local securityRolltxt = display.newText({
+      text = securityRoll,
+      x = display.contentWidth-40,      
+      y= 175, 
+      parent = sceneGroup,
+      font = nil,
+      fontSize = 16
+      })
+   securityRolltxt.anchorX =1
+   securityRolltxt:setFillColor(.75,0,0)         
+     
+
+   local heatTotal = Job.AgentHeat + securityRoll
+
    
-         local cityText = display.newText(sceneGroup,Job.destination, display.contentWidth/2, 30, nil, 40)
-         cityText:setFillColor(0)
-         
-         local backBtn = display.newText( "Back", 0, 400, native.systemFont, 32 )
-         backBtn:addEventListener("tap", backBtnClick)
-         backBtn.x = 75
-         backBtn:setFillColor(0)
-         sceneGroup:insert(backBtn)
-
-         -- local agentInfoTxt = display.newText({
-         --    text = 
-         --    })
-
-         local securityLevel = display.newText({
-            text = "Security level:  "..Job.security,            
-            x = display.contentWidth*.5,
-            y = 75,
-            parent = sceneGroup,
-            font = nil,
-            fontSize = 25
-          })
-         securityLevel:setFillColor(0)
-         sceneGroup:insert(securityLevel)
-
-
-         local securityRoll = getRandomSecurityscore()
-
-         local securityRolltxt = display.newText({
-            text = "Current Security:  "..securityRoll,
-            x = display.contentWidth*.5,
-            y= 125, 
-            parent = sceneGroup,
-            font = nil,
-            fontSize = 25
-            })
-
-         securityRolltxt:setFillColor(.75,0,0)         
-      end
 end
 
 -- "scene:show()"
@@ -146,7 +151,7 @@ function scene:hide( event )
       -- Example: stop timers, stop animation, stop audio, etc.
    -- composer.gotoScene(event.parent)
 
-   composer.removeScene("popup_createShipment", true)
+   composer.removeScene("popup_enterCustoms", true)
    elseif ( phase == "did" ) then
       -- Called immediately after scene goes off screen.
       -- sceneGroup:removeSelf()

@@ -23,9 +23,32 @@ function completeShipment(Jobid)
 	db:exec("update PlayerStatus set CurrentMoney = CurrentMoney + (select Value from Jobs where JobId = "..Jobid..")")
 	db:exec("delete from Jobs where JobId="..Jobid)
 
-
 end
 
+function getJobInfo(Jobid)
+    local selectStr = "select Jobid, AgentID, (select AgentName from Agents where AgentId = Jobs.AgentID) AgentName, Complete,  (select Name from Cities where CityID = Origin) Origin, (select Name from Cities where CityID = Destination) Destination, Value, ETA, StartTime, (select Security from Cities where CityID = Destination) security, (select Heat from Agents where Agentid = Jobs.AgentID) agentHeat, (select MaxHeat from Agents where Agentid = Jobs.AgentID) agentMaxHeat from Jobs where Jobid = "..Jobid
+
+    print(selectStr)
+      for row in db:nrows(selectStr)   do
+         local Job = 
+         {
+            id= row.Jobid,
+            agentId = row.AgentId,
+            AgentName = row.AgentName,
+            AgentHeat = row.agentHeat,
+            AgentMaxHeat = row.agentMaxHeat,
+            Complete = row.Complete,
+            origin = row.Origin,
+            destination = row.Destination,
+            value = row.Value,
+            eta = row.ETA,          
+            starttime = row.StartTime, 
+            security = row.security,
+
+         }
+         return Job
+    end
+end
 
 ----------
 function getAllOwnedAgents( )
@@ -92,6 +115,12 @@ function getContract(openContractID)
   end
 end
 
+
+function getAgentHeat(Agentid)
+  for row in db:nrows("Select Heat from Agents where agentId = "..agentId) do
+      return row.Heat
+  end
+end
 
 
 function getAllActiveJobs()
@@ -204,7 +233,7 @@ function addRandomContract()
     -- print (travelTimeSelectStr)
     local travelTime = nil
     for row in db:nrows(travelTimeSelectStr) do
-         travelTime = row.BaseTime /100	--REduce time for testing
+         travelTime = row.BaseTime /10	--REduce time for testing
     end
 
     local contractValue = 100*travelTime*(destSecurity^2) * math.random(1, 2)

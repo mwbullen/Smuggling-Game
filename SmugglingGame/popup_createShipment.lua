@@ -49,8 +49,9 @@ function scene:create( event )
    local bg = display.newRect( 0, 0, display.contentWidth, display.contentHeight )
    bg.anchorX = 0
    bg.anchorY = 0
-    bg:setFillColor( 0,.24,0 )
+   bg:setFillColor( 0,.24,0 )
    sceneGroup:insert(bg)
+   
    openContractID = event.params.openContractID
    agentId = event.params.agentId
 

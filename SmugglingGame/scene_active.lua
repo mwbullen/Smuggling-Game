@@ -11,15 +11,10 @@ local scene = composer.newScene()
 
 local jobs = {}
 
-local tableView = nil
+local tableView
 
 local function displayJobRow(event)
 	local row = event.row
-
-	-- local jobDesc = display.newText(row,jobs[row.index].origin.." to ".. jobs[row.index].destination,row.contentWidth/2,55,nil ,12)
-	-- jobDesc:setFillColor( 0)	
-	-- jobDesc.anchorX =.5
-
 
 	local agentNameTxt = display.newText(row, jobs[row.index].AgentName, 10, 20, nil, 18)
 	agentNameTxt.anchorX =0 
@@ -27,18 +22,12 @@ local function displayJobRow(event)
 
 	local agentHeat = display.newText(row, jobs[row.index].agentHeat.."/"..jobs[row.index].agentMaxHeat, display.contentWidth*.9, 20, nil, 16)
 	agentHeat:setFillColor(.75,0,0)
-	
 
 	local secondsRemaining = jobs[row.index].eta - os.time()
 	if secondsRemaining > 0 then
-		local jobProgress = widget.newProgressView({left = 20, top = 40, width = 250 })
-		row:insert(jobProgress)
-
-		local totalJobSeconds = jobs[row.index].eta - jobs[row.index].starttime 
-		local elapsedSeconds = totalJobSeconds - secondsRemaining
-		local percentComplete = elapsedSeconds / totalJobSeconds
-
-		jobProgress:setProgress(percentComplete)
+		local jobProgress = widget.newProgressView({left = 20, top = 40, width = 250, isAnimated = true })
+		row:insert(jobProgress)		
+		jobs[row.index].progressView = jobProgress
 
 		local remainingTimeTxt = display.newText(row,math.round(secondsRemaining/60,2.2).." min", display.contentWidth - 30, 45, nil, 12)
 		remainingTimeTxt:setFillColor(0)
@@ -51,42 +40,47 @@ local function displayJobRow(event)
 		destTxt:setFillColor(0)
 		destTxt.anchorX =1
 	
-
-
 	else
 		local jobReadyMsg = display.newText(row, "Ready for Customs",row.contentWidth/2, 50, nil, 15)	
 		jobReadyMsg:setFillColor(.0,.6,.0)
 
-	end
+	end	
 	
-	
-	 -- sceneGroup:insert(jobProgress)
-
-	--add progress bar
-	--calculate time remaining
 end
 
 local function updateJobProgress()
-	
+	for i=1, #jobs, 1 do		
+		local tripProgress = jobs[i].progressView
+		local secondsRemaining = jobs[i].eta - os.time()
+
+		if secondsRemaining > 0 then
+			local totalJobSeconds = jobs[i].eta - jobs[i].starttime 
+			local elapsedSeconds = totalJobSeconds - secondsRemaining
+			local percentComplete = elapsedSeconds / totalJobSeconds
+						
+			tripProgress:setProgress(percentComplete)
+		else
+			if  tripProgress == nil then else tripProgress.isVisible = false end
+		end
+	end
+
+	timer.performWithDelay(1000,updateJobProgress)
 end
 
 local function selectJobRow(event)	
-	-- for i=1,tableView:getNumRows(), 1
-	-- do
-		
-	-- end
 
 	--Launch security form
-	-- local options = {params={Jobid = jobs[event.row.index].Jobid}}
-	-- composer.gotoScene("popup_enterCustoms", options)
+	 local options = {params={Jobid = jobs[event.row.index].Jobid}}
+	 print(options.params.Jobid)
+	 composer.gotoScene("popup_enterCustoms", options)
 
 	--Confirm ready for customs, if so complete run and get paid
 	local secondsRemaining = jobs[event.row.index].eta - os.time()
 	if secondsRemaining <= 0 then
 				
-		completeShipment(jobs[event.row.index].Jobid)	
-		updateStatusBar()
-		composer.gotoScene("scene_active")
+		-- completeShipment(jobs[event.row.index].Jobid)	
+		-- updateStatusBar()
+		-- composer.gotoScene("scene_active")
 	end
 
 end
@@ -126,7 +120,7 @@ function scene:create( event )
 		tableView:insertRow{ topPadding=10, bottomPadding=10, rowHeight = 70, rowColor = {default = {1, 0.980392 ,0.803922}}}
 	end
 
-		
+
 
 end
 
@@ -142,7 +136,7 @@ function scene:show( event )
 		-- INSERT code here to make the scene come alive
 		-- e.g. start timers, begin animation, play audio, etc.
 
-		
+			updateJobProgress()
 	end	
 end
 

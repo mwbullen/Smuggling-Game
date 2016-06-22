@@ -32,39 +32,7 @@ end
 function scene:create( event )
 	local sceneGroup = self.view
 	
-	-- Called when the scene's view does not exist.
-	-- 
-	-- INSERT code here to initialize the scene
-	-- e.g. add display objects to 'sceneGroup', add touch listeners, etc.
-	
-	-- create a white background to fill screen
-	-- local bg = display.newRect( 0, 0, display.contentWidth, display.contentHeight )
-	-- bg.anchorX = 0
-	-- bg.anchorY = 0
-	-- bg:setFillColor( 1 )	-- white
-	
-	-- create some text
-	-- local title = display.newText( "Operatives", 0, 0, native.systemFont, 32 )
-	-- title:setFillColor( 0 )	-- black
-	-- title.x = display.contentWidth * 0.5
-	-- title.y = 125
-	
-	-- local newTextParams = { text = "Show Operatives Here", 
-	-- 						x = 0, y = 0, 
-	-- 						width = 310, height = 310, 
-	-- 						font = native.systemFont, fontSize = 14, 
-	-- 						align = "center" }
-	-- local summary = display.newText( newTextParams )
-	-- summary:setFillColor( 0 ) -- black
-	-- summary.x = display.contentWidth * 0.5 + 10
-	-- summary.y = title.y + 215
-	
-	-- all objects must be added to group (e.g. self.view)
-	-- sceneGroup:insert( bg )
-	-- sceneGroup:insert( title )
-	-- sceneGroup:insert( summary )
-
-	local backBtn = display.newText( "Back", 0, 400, native.systemFont, 32 )
+	local backBtn = display.newText( "Back", 0, 350, native.systemFont, 32 )
     backBtn:addEventListener("tap", backAgentSelBtnClick)
     backBtn.x = 75
     sceneGroup:insert(backBtn)
