@@ -115,10 +115,30 @@ function scene:create( event )
    securityRolltxt.anchorX =1
    securityRolltxt:setFillColor(.75,0,0)         
      
-
-   local heatTotal = Job.AgentHeat + securityRoll
+   local resultTxt = display.newText("Result", display.contentWidth/2, 250, nil, 32)
+   sceneGroup:insert(resultTxt)
 
    
+   local heatTotal = Job.AgentHeat + securityRoll
+
+   if heatTotal > Job.AgentMaxHeat then
+      --Busted!
+      resultTxt.text = "Busted!"
+      resultTxt:setFillColor(.75,0,0)
+   else
+      --Passed!
+      resultTxt.text = "Passed Security!"
+      resultTxt:setFillColor(0,.75,0) 
+      completeShipment(JobId)     
+   end
+
+   -- local doneGroup
+   -- local doneRect = display.newRect(20, display.contentWidth/2, 350, 100, 24)
+   -- doneRect:setStrokeColor(.5,.5,.5)
+   
+   local doneBtn = display.newText("Done", display.contentWidth/2, 350, nil, 24)
+   doneBtn:setFillColor(0)
+   sceneGroup:insert(doneBtn)
 end
 
 -- "scene:show()"

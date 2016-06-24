@@ -21,8 +21,16 @@ end
 function completeShipment(Jobid)
 	--get cash value of shipment, add to current chash
 	db:exec("update PlayerStatus set CurrentMoney = CurrentMoney + (select Value from Jobs where JobId = "..Jobid..")")
-	db:exec("delete from Jobs where JobId="..Jobid)
 
+
+  local updateStr = "update Agents set CityID = (select Destination from Jobs where Jobid = "..Jobid..") where AgentId = (select AgentId from Jobs where JobId="..Jobid..")"
+  print(updateStr)
+  db:exec(updateStr)
+
+  db:exec("delete from Jobs where JobId="..Jobid)
+end
+
+function shipmentBusted(Jobid)
 end
 
 function getJobInfo(Jobid)
@@ -83,6 +91,20 @@ function getAllAvailableAgents( )
 	end
 
 	return agents
+end
+
+function getLocationforAgent(agentId)
+  local selectStr = "select Cities.Name CityName, Regions.Name RegionName from Agents, Cities, Regions where Agents.CityID = Cities.CityID and Cities.RegionID = Regions.RegionID and AgentId = "..agentId
+  print(selectStr)
+  for row in db:nrows(selectStr)
+    do
+      local result = {
+        CityName = row.CityName,
+        RegionName= row.RegionName
+      }
+
+    return result
+  end
 end
 
 function getAvailableContracts() 

@@ -65,6 +65,13 @@ local function displayAgentRow (event)
 	
 	local agentStatusTxt = display.newText(row,"", row.contentWidth/2, 50, nil, 15)
 	agentStatusTxt:setFillColor(0,.5,0);	
+
+	local agentLocation = getLocationforAgent(agents[row.index].id)
+
+	local agentLocationTxt = display.newText(row,agentLocation.RegionName, display.contentWidth - 10, 25, nil, 20)
+	agentLocationTxt.anchorX = 1
+	agentLocationTxt:setFillColor(0,0,.5)
+
 end
 
 function scene:show( event )
