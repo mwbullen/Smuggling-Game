@@ -55,22 +55,26 @@ local agents = {}
 local function displayAgentRow (event)
 	local row = event.row
 	
-	local agentNameTxt = display.newText(row, agents[row.index].name,10, 25 ,nil ,20)
+	local agentNameTxt = display.newText(row, agents[row.index].name,10, 25 ,nil ,16)
 	agentNameTxt:setFillColor(0);	
 	agentNameTxt.anchorX = 0
 	
-	local agentLevelTxt = display.newText(row, "lvl "..agents[row.index].level,12, 50 ,nil ,16)
+	local agentLevelTxt = display.newText(row, "lvl "..agents[row.index].level,12, 50 ,nil ,12)
 	agentLevelTxt:setFillColor(0)
 	agentLevelTxt.anchorX = 0;
 	
-	local agentStatusTxt = display.newText(row,"", row.contentWidth/2, 50, nil, 15)
+	local agentStatusTxt = display.newText(row,"", row.contentWidth/2, 50, nil, 12)
 	agentStatusTxt:setFillColor(0,.5,0);	
 
 	local agentLocation = getLocationforAgent(agents[row.index].id)
 
-	local agentLocationTxt = display.newText(row,agentLocation.RegionName, display.contentWidth - 10, 25, nil, 20)
+	local agentLocationTxt = display.newText(row,agentLocation.RegionName, display.contentWidth - 10, 50, nil, 14)
 	agentLocationTxt.anchorX = 1
 	agentLocationTxt:setFillColor(0,0,.5)
+
+	local agentHeatTxt = display.newText(row, agents[row.index].heat, display.contentWidth-10, 25, nil, 16)
+	agentHeatTxt.anchorX = 1
+	agentHeatTxt:setFillColor(.75,0,0)
 
 end
 

@@ -20,7 +20,9 @@ end
 
 function completeShipment(Jobid)
 	--get cash value of shipment, add to current chash
-	db:exec("update PlayerStatus set CurrentMoney = CurrentMoney + (select Value from Jobs where JobId = "..Jobid..")")
+  local updateStr ="update PlayerStatus set CurrentMoney = CurrentMoney + (select Value from Jobs where JobId = "..Jobid..")" 
+  print(updateStr)
+	db:exec(updateStr)
 
 
   local updateStr = "update Agents set CityID = (select Destination from Jobs where Jobid = "..Jobid..") where AgentId = (select AgentId from Jobs where JobId="..Jobid..")"
@@ -30,18 +32,19 @@ function completeShipment(Jobid)
   db:exec("delete from Jobs where JobId="..Jobid)
 end
 
-function shipmentBusted(Jobid)
+function deleteAgent(AgentID)
+  local deleteStr = "delete from Agents where AgentId ="..AgentID
 end
 
 function getJobInfo(Jobid)
-    local selectStr = "select Jobid, AgentID, (select AgentName from Agents where AgentId = Jobs.AgentID) AgentName, Complete,  (select Name from Cities where CityID = Origin) Origin, (select Name from Cities where CityID = Destination) Destination, Value, ETA, StartTime, (select Security from Cities where CityID = Destination) security, (select Heat from Agents where Agentid = Jobs.AgentID) agentHeat, (select MaxHeat from Agents where Agentid = Jobs.AgentID) agentMaxHeat from Jobs where Jobid = "..Jobid
+    local selectStr = "select Jobid, AgentId, (select AgentName from Agents where AgentId = Jobs.AgentID) AgentName, Complete,  (select Name from Cities where CityID = Origin) Origin, (select Name from Cities where CityID = Destination) Destination, Value, ETA, StartTime, (select Security from Cities where CityID = Destination) security, (select Heat from Agents where Agentid = Jobs.AgentID) agentHeat, (select MaxHeat from Agents where Agentid = Jobs.AgentID) agentMaxHeat from Jobs where Jobid = "..Jobid
 
     print(selectStr)
       for row in db:nrows(selectStr)   do
          local Job = 
          {
             id= row.Jobid,
-            agentId = row.AgentId,
+            AgentId = row.AgentId,
             AgentName = row.AgentName,
             AgentHeat = row.agentHeat,
             AgentMaxHeat = row.agentMaxHeat,
@@ -106,6 +109,14 @@ function getLocationforAgent(agentId)
     return result
   end
 end
+
+function setHeatforAgent(agentId, heat)
+  local updateStr = "update Agents set Heat = "..heat.." where AgentId = "..agentId
+
+  db:exec(updateStr)
+end
+
+-------
 
 function getAvailableContracts() 
 	openContracts = {}

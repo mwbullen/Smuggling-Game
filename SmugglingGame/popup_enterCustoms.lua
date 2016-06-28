@@ -26,7 +26,7 @@ end
 
 local function confirmBtnClick(event) 
       --Create new shipment
-      createShipment(openContractID, agentId)
+     
       composer.gotoScene("scene_active")
       
 end
@@ -125,10 +125,16 @@ function scene:create( event )
       --Busted!
       resultTxt.text = "Busted!"
       resultTxt:setFillColor(.75,0,0)
+
+      deleteAgent(Job.AgentId)
    else
       --Passed!
       resultTxt.text = "Passed Security!"
       resultTxt:setFillColor(0,.75,0) 
+
+      print(Job.AgentId)
+      setHeatforAgent(Job.AgentId, heatTotal)
+
       completeShipment(JobId)     
    end
 
@@ -138,6 +144,7 @@ function scene:create( event )
    
    local doneBtn = display.newText("Done", display.contentWidth/2, 350, nil, 24)
    doneBtn:setFillColor(0)
+   doneBtn:addEventListener("tap", confirmBtnClick)
    sceneGroup:insert(doneBtn)
 end
 
