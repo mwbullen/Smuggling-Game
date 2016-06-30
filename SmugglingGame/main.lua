@@ -1,23 +1,34 @@
 -----------------------------------------------------------------------------------------
 --
--- main.lua
+-- scene_game.lua
 --
 -----------------------------------------------------------------------------------------
 require "sqlite3"
-require("functions")
--- show default status bar (iOS)
+-- require "functions"
+require "io"
+-- -- show default status bar (iOS)
 display.setStatusBar( display.DefaultStatusBar )
 
--- include Corona's "widget" library
+
+-- -- include Corona's "widget" library
 local widget = require "widget"
 local composer = require "composer"
 
 local statusBarArea
 
-local path = system.pathForFile("data.db", system.DocumentsDirectory)
- db = sqlite3.open(path)
+local dbPath = system.pathForFile("data.db", system.DocumentsDirectory)
+ 
 
-print (path)
+function doesDBExist()
+  local dbFile = io.open(dbPath, "r") 
+
+  if (dbFile ) then
+  		return true
+  else 
+  		return false
+  end
+end
+
 -- event listeners for tab buttons:
 local function onFirstView( event )
 	composer.gotoScene( "scene_active" )
@@ -53,26 +64,37 @@ local tabButtons = {
 }
 
 -- create the actual tabBar widget
-local tabBar = widget.newTabBar{
+
+print(dbPath)
+print (doesDBExist())
+if doesDBExist() == true  then
+	require "functions"
+
+	local tabBar = widget.newTabBar{
 	top = display.contentHeight - 50,	-- 50 is default height for tabBar widget
 	buttons = tabButtons
 }
 
-    statusBarGroup = display.newGroup()
 
-    statusBarArea = display.newRect(0, display.contentHeight - 65, display.contentWidth, 35)
-    statusBarArea.anchorX= 0
-    statusBarArea:setFillColor(.4,.4,.4)
+	db = sqlite3.open(dbPath)
 
-    statusBarGroup:insert(statusBarArea)
+	statusBarGroup = display.newGroup()
 
-    
-    cashTxt = display.newText( "$ "..getCurrentCash(),display.contentWidth-20, display.contentHeight - 65 , nil, 24)
-    cashTxt.anchorX = 1
-    cashTxt:setFillColor(1)
-    statusBarGroup:insert(cashTxt)
+	statusBarArea = display.newRect(0, display.contentHeight - 65, display.contentWidth, 35)
+	statusBarArea.anchorX= 0
+	statusBarArea:setFillColor(.4,.4,.4)
+	statusBarGroup:insert(statusBarArea)
 
 
-onFirstView()	-- invoke first tab button's onPress event manually
+	cashTxt = display.newText( "$ "..getCurrentCash(),display.contentWidth-20, display.contentHeight - 65 , nil, 24)
+	cashTxt.anchorX = 1
+	cashTxt:setFillColor(1)
+	statusBarGroup:insert(cashTxt)
 
-updateStatusBar()
+	onFirstView()	-- invoke first tab button's onPress event manually
+
+	updateStatusBar()
+else
+	 composer.showOverlay("popup_menu")		
+end
+

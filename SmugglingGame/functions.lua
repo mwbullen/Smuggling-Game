@@ -1,9 +1,18 @@
 require "sqlite3"
+require "io"
 
-local  path = system.pathForFile("data.db", system.DocumentsDirectory)
-local db = sqlite3.open(path)
+local  dbPath = system.pathForFile("data.db", system.DocumentsDirectory)
+local db = sqlite3.open(dbPath)
 
 local contractLimit = 6
+
+----------System operations
+function doesDBExist()
+  local dbFile = io.open(dbPath)
+
+  return dbFile  
+end
+
 
 ----------Money operations
 function getCurrentCash() 	
