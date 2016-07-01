@@ -56,26 +56,24 @@ end
 -- create a tabBar widget with two buttons at the bottom of the screen
 
 -- table to setup buttons
-local tabButtons = {
+
+-- create the actual tabBar widget
+
+function InitTabDisplay() 
+require "functions"
+	
+	local tabButtons = {
 	{ label="Shipments", defaultFile="icons/icon1.png", overFile="icons/icon1-down.png", width = 32, height = 32, onPress=onFirstView, selected=true },
 	{ label="Agents", defaultFile="icons/icon2.png", overFile="icons/icon2-down.png", width = 32, height = 32, onPress=onSecondView },
 	-- { label="Passports", defaultFile="icons/icon2.png", overFile="icons/icon2-down.png", width = 32, height = 32, onPress=onThirdView },
 	{ label="Black Market", defaultFile="icons/icon2.png", overFile="icons/icon2-down.png", width = 32, height = 32, onPress=onFourthView }
 }
 
--- create the actual tabBar widget
-
-print(dbPath)
-print (doesDBExist())
-if doesDBExist() == true  then
-	require "functions"
 
 	local tabBar = widget.newTabBar{
 	top = display.contentHeight - 50,	-- 50 is default height for tabBar widget
 	buttons = tabButtons
 }
-
-
 	db = sqlite3.open(dbPath)
 
 	statusBarGroup = display.newGroup()
@@ -94,6 +92,12 @@ if doesDBExist() == true  then
 	onFirstView()	-- invoke first tab button's onPress event manually
 
 	updateStatusBar()
+end
+
+print(dbPath)
+print (doesDBExist())
+if doesDBExist() == true  then
+	InitTabDisplay()	
 else
 	 composer.showOverlay("popup_menu")		
 end

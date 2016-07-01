@@ -97,6 +97,8 @@ function scene:create( event )
    sceneGroup:insert(agentHeatText)
 
 
+   -- showSecurityRoll()
+   
    local securityLbl = display.newText("Security check", 10, 175, nil, 18)
    securityLbl.anchorX =0
    securityLbl:setFillColor(.75,0,0)
@@ -117,7 +119,6 @@ function scene:create( event )
      
    local resultTxt = display.newText("Result", display.contentWidth/2, 250, nil, 32)
    sceneGroup:insert(resultTxt)
-
    
    local heatTotal = Job.AgentHeat + securityRoll
 
@@ -126,6 +127,7 @@ function scene:create( event )
       resultTxt.text = "Busted!"
       resultTxt:setFillColor(.75,0,0)
 
+      deleteJob(JobId)
       deleteAgent(Job.AgentId)
    else
       --Passed!
@@ -146,6 +148,10 @@ function scene:create( event )
    doneBtn:setFillColor(0)
    doneBtn:addEventListener("tap", confirmBtnClick)
    sceneGroup:insert(doneBtn)
+end
+
+function showSecurityRoll()
+
 end
 
 -- "scene:show()"

@@ -1,5 +1,5 @@
 require "sqlite3"
-require "io"
+
 
 local  dbPath = system.pathForFile("data.db", system.DocumentsDirectory)
 local db = sqlite3.open(dbPath)
@@ -7,10 +7,21 @@ local db = sqlite3.open(dbPath)
 local contractLimit = 6
 
 ----------System operations
-function doesDBExist()
-  local dbFile = io.open(dbPath)
 
-  return dbFile  
+
+---------New Game
+
+function createAgents()
+   local  dbPath = system.pathForFile("data.db", system.DocumentsDirectory)
+   local db = sqlite3.open(dbPath)
+
+     local randomNames = {"Ghost", "Iceman", "Nighthawk", "Red Fox"}
+
+  
+    local InsertStr = "insert into Agents (AgentName) values ('Ghost')"
+    print (InsertStr)
+    db:exec(InsertStr)
+  
 end
 
 
@@ -39,6 +50,8 @@ function completeShipment(Jobid)
   db:exec(updateStr)
 
   db:exec("delete from Jobs where JobId="..Jobid)
+
+  updateStatusBar()
 end
 
 function deleteAgent(AgentID)
@@ -217,6 +230,14 @@ function createShipment(openContractID, agentId)
 	print (deleteStr)
 end
 
+-----------New game initialization
+
+
+
+
+------------Update available contracts
+
+
 function deleteExpiredContracts()
     local deleteStr = "delete from openContracts where expiration <"..os.time()
     db:exec(deleteStr)
@@ -290,52 +311,52 @@ function addRandomContract()
         
 end
 
-function copyFile( srcName, srcPath, dstName, dstPath, overwrite )
+-- function copyFile( srcName, srcPath, dstName, dstPath, overwrite )
 
-    local results = false
+--     local results = false
 
-    local fileExists = doesFileExist( srcName, srcPath )
-    if ( fileExists == false ) then
-        return nil  -- nil = Source file not found
-    end
+--     local fileExists = doesFileExist( srcName, srcPath )
+--     if ( fileExists == false ) then
+--         return nil  -- nil = Source file not found
+--     end
 
-    -- Check to see if destination file already exists
-    if not ( overwrite ) then
-        if ( fileLib.doesFileExist( dstName, dstPath ) ) then
-            return 1  -- 1 = File already exists (don't overwrite)
-        end
-    end
+--     -- Check to see if destination file already exists
+--     if not ( overwrite ) then
+--         if ( fileLib.doesFileExist( dstName, dstPath ) ) then
+--             return 1  -- 1 = File already exists (don't overwrite)
+--         end
+--     end
 
-    -- Copy the source file to the destination file
-    local rFilePath = system.pathForFile( srcName, srcPath )
-    local wFilePath = system.pathForFile( dstName, dstPath )
+--     -- Copy the source file to the destination file
+--     local rFilePath = system.pathForFile( srcName, srcPath )
+--     local wFilePath = system.pathForFile( dstName, dstPath )
 
-    local rfh = io.open( rFilePath, "rb" )
-    local wfh, errorString = io.open( wFilePath, "wb" )
+--     local rfh = io.open( rFilePath, "rb" )
+--     local wfh, errorString = io.open( wFilePath, "wb" )
 
-    if not ( wfh ) then
-        -- Error occurred; output the cause
-        print( "File error: " .. errorString )
-        return false
-    else
-        -- Read the file and write to the destination directory
-        local data = rfh:read( "*a" )
-        if not ( data ) then
-            print( "Read error!" )
-            return false
-        else
-            if not ( wfh:write( data ) ) then
-                print( "Write error!" )
-                return false
-            end
-        end
-    end
+--     if not ( wfh ) then
+--         -- Error occurred; output the cause
+--         print( "File error: " .. errorString )
+--         return false
+--     else
+--         -- Read the file and write to the destination directory
+--         local data = rfh:read( "*a" )
+--         if not ( data ) then
+--             print( "Read error!" )
+--             return false
+--         else
+--             if not ( wfh:write( data ) ) then
+--                 print( "Write error!" )
+--                 return false
+--             end
+--         end
+--     end
 
-    results = 2  -- 2 = File copied successfully!
+--     results = 2  -- 2 = File copied successfully!
 
-    -- Close file handles
-    rfh:close()
-    wfh:close()
+--     -- Close file handles
+--     rfh:close()
+--     wfh:close()
 
-    return results
-end
+--     return results
+-- end

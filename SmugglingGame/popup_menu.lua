@@ -66,8 +66,11 @@ end
 
 ---------------------------------------------------------------------------------
 
+
+
 local function newGameClick(event)
    copyFile("data_empty.db", nil, "data.db", system.DocumentsDirectory)
+   InitTabDisplay()     
    composer.hideOverlay()
 end
 
@@ -80,8 +83,8 @@ function scene:create( event )
    -- Initialize the scene here.
    -- Example: add display objects to "sceneGroup", add touch listeners, etc.
 
-   local newGameText = display.newText("New Game", display.contentWidth/2, display.contentHeight/3, nil, 48)
-   newGameText:setFillColor(0,1,0)
+   local newGameText = display.newText("New Game", display.contentWidth/2, display.contentHeight/3, nil, 42)
+   newGameText:setFillColor(.7,0,0)
    newGameText:addEventListener("tap", newGameClick)
    sceneGroup:insert(newGameText)
 

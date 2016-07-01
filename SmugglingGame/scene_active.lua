@@ -20,6 +20,7 @@ local function displayJobRow(event)
 	agentNameTxt.anchorX =0 
 	agentNameTxt:setFillColor(0)
 
+
 	local agentHeat = display.newText(row, jobs[row.index].agentHeat.."/"..jobs[row.index].agentMaxHeat, display.contentWidth*.9, 20, nil, 16)
 	agentHeat:setFillColor(.75,0,0)
 
@@ -30,6 +31,7 @@ local function displayJobRow(event)
 		jobs[row.index].progressView = jobProgress
 
 		local remainingTimeTxt = display.newText(row,math.round(secondsRemaining/60,2.2).." min", display.contentWidth - 30, 45, nil, 12)
+		jobs[row.index].remainingTimeTxt = remainingTimeTxt
 		remainingTimeTxt:setFillColor(0)
 
 		local originTxt = display.newText(row,jobs[row.index].origin, 20, 55, nil, 12)
@@ -57,8 +59,11 @@ local function updateJobProgress()
 			local totalJobSeconds = jobs[i].eta - jobs[i].starttime 
 			local elapsedSeconds = totalJobSeconds - secondsRemaining
 			local percentComplete = elapsedSeconds / totalJobSeconds
-						
+			
 			tripProgress:setProgress(percentComplete)
+
+			jobs[i].remainingTimeTxt.text = math.round(secondsRemaining/60,2.2).." min"
+			-- jobs[i].remainingTimeTxt.text:setFillColor(0)
 		else
 			if  tripProgress == nil then else tripProgress.isVisible = false end
 		end
