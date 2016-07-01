@@ -49,13 +49,22 @@ function completeShipment(Jobid)
   print(updateStr)
   db:exec(updateStr)
 
-  db:exec("delete from Jobs where JobId="..Jobid)
-
+  deleteJob(Jobid)
+  
   updateStatusBar()
+end
+
+function deleteJob(Jobid)
+  db:exec("delete from Jobs where JobId="..Jobid)
 end
 
 function deleteAgent(AgentID)
   local deleteStr = "delete from Agents where AgentId ="..AgentID
+  db:exec(deleteStr)
+end
+
+function bustedShipment(Jobid)
+
 end
 
 function getJobInfo(Jobid)
