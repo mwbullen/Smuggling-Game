@@ -9,6 +9,9 @@ require "io"
 -- -- show default status bar (iOS)
 display.setStatusBar( display.DefaultStatusBar )
 
+--Globals
+
+menuBarHeight = 40
 
 -- -- include Corona's "widget" library
 local widget = require "widget"
@@ -18,6 +21,7 @@ local statusBarArea
 
 local dbPath = system.pathForFile("data.db", system.DocumentsDirectory)
  
+
 
 function doesDBExist()
   local dbFile = io.open(dbPath, "r") 
@@ -67,22 +71,29 @@ require "functions"
 	{ label="Agents", defaultFile="icons/icon2.png", overFile="icons/icon2-down.png", width = 32, height = 32, onPress=onSecondView },
 	-- { label="Passports", defaultFile="icons/icon2.png", overFile="icons/icon2-down.png", width = 32, height = 32, onPress=onThirdView },
 	{ label="Black Market", defaultFile="icons/icon2.png", overFile="icons/icon2-down.png", width = 32, height = 32, onPress=onFourthView }
-}
+	}
 
 
 	local tabBar = widget.newTabBar{
 	top = display.contentHeight - 50,	-- 50 is default height for tabBar widget
 	buttons = tabButtons
-}
+	}
+
+	----
+	menuBarBg = display.newRect(0,0,display.contentWidth, menuBarHeight)
+	menuBarBg.anchorX = 0
+	menuBarBg:setFillColor(.4)
+
+	----
 	db = sqlite3.open(dbPath)
+	----
 
 	statusBarGroup = display.newGroup()
 
 	statusBarArea = display.newRect(0, display.contentHeight - 65, display.contentWidth, 35)
 	statusBarArea.anchorX= 0
-	statusBarArea:setFillColor(.4,.4,.4)
+	statusBarArea:setFillColor(.4)
 	statusBarGroup:insert(statusBarArea)
-
 
 	cashTxt = display.newText( "$ "..getCurrentCash(),display.contentWidth-20, display.contentHeight - 65 , nil, 24)
 	cashTxt.anchorX = 1
@@ -94,8 +105,9 @@ require "functions"
 	updateStatusBar()
 end
 
-print(dbPath)
-print (doesDBExist())
+-- print(dbPath)
+-- print (doesDBExist())
+
 if doesDBExist() == true  then
 	InitTabDisplay()	
 else

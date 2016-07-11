@@ -16,7 +16,7 @@ local tableView
 local function displayJobRow(event)
 	local row = event.row
 
-	local agentNameTxt = display.newText(row, jobs[row.index].AgentName, 10, 20, nil, 18)
+	local agentNameTxt = display.newText(row, jobs[row.index].AgentName, 10, 20, nil, mainItemFontSize)
 	agentNameTxt.anchorX =0 
 	agentNameTxt:setFillColor(0)
 
@@ -103,18 +103,17 @@ function scene:create( event )
 	bg.anchorX = 0
 	bg.anchorY = 0
 	bg:setFillColor( 1 )	-- white
-	
-	
+		
 	
 	-- all objects must be added to group (e.g. self.view)
 	sceneGroup:insert( bg )
 	
 	tableView = widget.newTableView
-		{
-			-- height=300,
+		{		 height=display.contentHeight -100,
 			onRowRender = displayJobRow,
 			onRowTouch = selectJobRow,
-			-- top = 45
+			 top = menuBarHeight *.5
+			-- height = 300
 			-- noLines = true			
 		}
 	sceneGroup:insert(tableView)

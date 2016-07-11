@@ -1,5 +1,5 @@
 require "sqlite3"
-
+require "settings"
 
 local  dbPath = system.pathForFile("data.db", system.DocumentsDirectory)
 local db = sqlite3.open(dbPath)

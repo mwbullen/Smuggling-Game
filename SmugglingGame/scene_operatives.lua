@@ -55,7 +55,7 @@ local agents = {}
 local function displayAgentRow (event)
 	local row = event.row
 	
-	local agentNameTxt = display.newText(row, agents[row.index].name,10, 25 ,nil ,16)
+	local agentNameTxt = display.newText(row, agents[row.index].name,10, 25 ,nil ,mainItemFontSize)
 	agentNameTxt:setFillColor(0);	
 	agentNameTxt.anchorX = 0
 	
@@ -93,8 +93,9 @@ function scene:show( event )
 		
 		local tableView = widget.newTableView
 		{
-			height=300,
-			onRowRender = displayAgentRow
+			onRowRender = displayAgentRow,
+			top = menuBarHeight *.5,
+			height=display.contentHeight -100
 		}
 		sceneGroup:insert(tableView)
 

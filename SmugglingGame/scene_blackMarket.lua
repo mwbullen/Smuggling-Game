@@ -59,24 +59,24 @@ local function displayMarketRow (event)
 	-- row:setFillColor(144,195,212)
 
 	-- Route
-	local tripDesc = display.newText(row, openContracts[row.index].origin.." to "..openContracts[row.index].destination,10, 0 ,nil ,20)
+	local tripDesc = display.newText(row, openContracts[row.index].origin.." to "..openContracts[row.index].destination,10, 0 ,nil ,mainItemFontSize)
 	tripDesc:setFillColor( 0)
 	tripDesc.anchorX = 0;
 	tripDesc.y= 25
 
 	--Payment
-	local contractValueTxt = display.newText(row, "$"..openContracts[row.index].value, 300, 55, nil, 16)
+	local contractValueTxt = display.newText(row, "$"..openContracts[row.index].value, 300, 55, nil, 14)
 	contractValueTxt:setFillColor(0.133333, 0.545098 ,0.133333)
 	contractValueTxt.anchorX = row.contentWidth
 	
 
 	--Risk
-	local riskTxt = display.newText(row,  openContracts[row.index].risk, 15, 55, nil, 14)
+	local riskTxt = display.newText(row,  openContracts[row.index].risk, 15, 55, nil, 12)
 	riskTxt.anchorX = 0
 	riskTxt:setFillColor(0.545098, 0, 0)
 
 	--Time
-	local contractTime = display.newText(row, openContracts[row.index].durationHours.."h", 150, 55, nil, 14)
+	local contractTime = display.newText(row, openContracts[row.index].durationHours.."h", 150, 55, nil, 12)
 	contractTime:setFillColor(0.545098, 0, 0)
 	contractTime.anchorX = 0
 	
@@ -111,7 +111,9 @@ function scene:show( event )
 		{
 			-- height=300,
 			onRowRender = displayMarketRow,
-			onRowTouch = selectMarketRow
+			onRowTouch = selectMarketRow,
+			top = menuBarHeight *.5,
+			height=display.contentHeight - (menuBarHeight)
 			-- noLines = true			
 		}
 		sceneGroup:insert(tableView)
