@@ -62,7 +62,7 @@ function scene:create( event )
    -- print("jobid")
    -- print(JobId)
    Job = getJobInfo(JobId)
-   local cityText = display.newText(sceneGroup,Job.destination, display.contentWidth/2, 30, nil, 40)
+   local cityText = display.newText(sceneGroup,Job.destination, display.contentWidth/2, 50, nil, 40)
    cityText:setFillColor(0)
    
    -- local backBtn = display.newText( "Back", 0, 350, native.systemFont, 32 )
@@ -78,7 +78,7 @@ function scene:create( event )
    local securityLevel = display.newText({
       text = "Security level:  "..Job.security,            
       x = display.contentWidth*.5,
-      y = 75,
+      y = 100,
       parent = sceneGroup,
       font = nil,
       fontSize = 25

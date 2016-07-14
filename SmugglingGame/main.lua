@@ -9,9 +9,7 @@ require "io"
 -- -- show default status bar (iOS)
 display.setStatusBar( display.DefaultStatusBar )
 
---Globals
 
-menuBarHeight = 40
 
 -- -- include Corona's "widget" library
 local widget = require "widget"
@@ -57,6 +55,10 @@ function updateStatusBar()
 end
 
 -----------------
+local function menuBtnClick (event)
+	composer.showOverlay("popup_menu")		
+end
+
 -- create a tabBar widget with two buttons at the bottom of the screen
 
 -- table to setup buttons
@@ -79,10 +81,13 @@ require "functions"
 	buttons = tabButtons
 	}
 
-	----
+	----top menu
 	menuBarBg = display.newRect(0,0,display.contentWidth, menuBarHeight)
 	menuBarBg.anchorX = 0
 	menuBarBg:setFillColor(.4)
+
+	menuBtn = display.newText("Menu",display.contentWidth -40, 0)
+	menuBtn:addEventListener("touch", menuBtnClick)
 
 	----
 	db = sqlite3.open(dbPath)

@@ -57,10 +57,10 @@ function scene:create( event )
 
    openContract = getContract(openContractID)
 
-   local tripItintxt = display.newText(openContract.origin.." to "..openContract.destination, 150, 20, native.systemFont, 22)
+   local tripItintxt = display.newText(openContract.origin.." to "..openContract.destination, 150, 40, native.systemFont, 22)
    sceneGroup:insert(tripItintxt)
 
-   local tripTimetxt = display.newText("Time: "..openContract.durationHours.."h", 150, 60,native.systemFont, 16)
+   local tripTimetxt = display.newText("Time: "..openContract.durationHours.."h", 150, 80,native.systemFont, 16)
    sceneGroup:insert(tripTimetxt)      
 
    

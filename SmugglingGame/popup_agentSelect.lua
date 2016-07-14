@@ -71,7 +71,8 @@ function scene:show( event )
 		{
 			height=200,
 			onRowRender = displayAgentRow,
-			onRowTouch = selectAgentRow
+			onRowTouch = selectAgentRow,
+			top = menuBarHeight *.5
 		}
 		sceneGroup:insert(tableView)
 
