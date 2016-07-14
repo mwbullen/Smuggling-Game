@@ -18,7 +18,7 @@ function createAgents()
      local randomNames = {"Ghost", "Iceman", "Nighthawk", "Red Fox"}
 
   
-    local InsertStr = "insert into Agents (AgentName) values ('Ghost')"
+    local InsertStr = "INSERT INTO AGENTS (AGENTNAME) VALUES ('Ghost')"
     print (InsertStr)
     db:exec(InsertStr)
   
@@ -27,8 +27,8 @@ end
 
 ----------Money operations
 function getCurrentCash() 	
-	for row in db:nrows("select CurrentMoney from PlayerStatus") do
-			return row.CurrentMoney
+	for row in db:nrows("SELECT CURRENTMONEY FROM PLAYERSTATUS") do
+			return row.CURRENTMONEY
 	end
 end
 
@@ -40,12 +40,12 @@ end
 
 function completeShipment(Jobid)
 	--get cash value of shipment, add to current chash
-  local updateStr ="update PlayerStatus set CurrentMoney = CurrentMoney + (select Value from Jobs where JobId = "..Jobid..")" 
+  local updateStr ="UPDATE PLAYERSTATUS SET CURRENTMONEY = CURRENTMONEY + (SELECT VALUE FROM JOBS WHERE JOBID = "..Jobid..")" 
   print(updateStr)
 	db:exec(updateStr)
 
 
-  local updateStr = "update Agents set CityID = (select Destination from Jobs where Jobid = "..Jobid..") where AgentId = (select AgentId from Jobs where JobId="..Jobid..")"
+  local updateStr = "UPDATE AGENTS SET CITYID = (SELECT DESTINATION FROM JOBS WHERE JOBID = "..JOBID..") WHERE AGENTID = (SELECT AGENTID FROM JOBS WHERE JOBID="..JOBID..")"
   print(updateStr)
   db:exec(updateStr)
 
@@ -55,11 +55,11 @@ function completeShipment(Jobid)
 end
 
 function deleteJob(Jobid)
-  db:exec("delete from Jobs where JobId="..Jobid)
+  db:exec("DELETE FROM JOBS WHERE JOBID="..Jobid)
 end
 
 function deleteAgent(AgentID)
-  local deleteStr = "delete from Agents where AgentId ="..AgentID
+  local deleteStr = "DELETE FROM AGENTS WHERE AGENTID ="..AgentID
   db:exec(deleteStr)
 end
 
@@ -68,24 +68,24 @@ function bustedShipment(Jobid)
 end
 
 function getJobInfo(Jobid)
-    local selectStr = "select Jobid, AgentId, (select AgentName from Agents where AgentId = Jobs.AgentID) AgentName, Complete,  (select Name from Cities where CityID = Origin) Origin, (select Name from Cities where CityID = Destination) Destination, Value, ETA, StartTime, (select Security from Cities where CityID = Destination) security, (select Heat from Agents where Agentid = Jobs.AgentID) agentHeat, (select MaxHeat from Agents where Agentid = Jobs.AgentID) agentMaxHeat from Jobs where Jobid = "..Jobid
+    local selectStr = "SELECT JOBID, AGENTID, (SELECT AGENTNAME FROM AGENTS WHERE AGENTID = JOBS.AGENTID) AGENTNAME, COMPLETE,  (SELECT NAME FROM CITIES WHERE CITYID = ORIGIN) ORIGIN, (SELECT NAME FROM CITIES WHERE CITYID = DESTINATION) DESTINATION, VALUE, ETA, STARTTIME, (SELECT SECURITY FROM CITIES WHERE CITYID = DESTINATION) SECURITY, (SELECT HEAT FROM AGENTS WHERE AGENTID = JOBS.AGENTID) AGENTHEAT, (SELECT MAXHEAT FROM AGENTS WHERE AGENTID = JOBS.AGENTID) AGENTMAXHEAT FROM JOBS WHERE JOBID = "..JOBID
 
     print(selectStr)
       for row in db:nrows(selectStr)   do
          local Job = 
          {
-            id= row.Jobid,
-            AgentId = row.AgentId,
-            AgentName = row.AgentName,
-            AgentHeat = row.agentHeat,
-            AgentMaxHeat = row.agentMaxHeat,
-            Complete = row.Complete,
-            origin = row.Origin,
-            destination = row.Destination,
-            value = row.Value,
+            id= row.JOBID,
+            AgentId = row.AGENTID,
+            AgentName = row.AGENTNAME,
+            AgentHeat = row.AGENTHEAT,
+            AgentMaxHeat = row.AGENTMAXHEAT,
+            Complete = row.COMPLETE,
+            origin = row.ORIGIN,
+            destination = row.DESTINATION,
+            value = row.VALUE,
             eta = row.ETA,          
-            starttime = row.StartTime, 
-            security = row.security,
+            starttime = row.STARTTIME, 
+            security = row.SECURITY,
 
          }
          return Job
@@ -94,47 +94,47 @@ end
 
 ----------
 function getAllOwnedAgents( )
-	local agents = {}
+	local AGENTS = {}
 
-	for row in db:nrows("select * from Agents where Owned = 1")	do		
-		agents[#agents+1] = 
+	for row in db:nrows("select * from AGENTS where OWNED = 1")	do		
+		AGENTS[#AGENTS+1] = 
 		{
-			id = row.AgentId,
-			name = row.AgentName,
-			heat = row.Heat,
-			level= row.Level,
-			experience = row.Experience
+			id = row.AGENTID,
+			name = row.AGENTNAME,
+			heat = row.HEAT,
+			level= row.LEVEL,
+			experience = row.EXPERIENCE
 		}
 	end
 
-	return agents
+	return AGENTS
 end
 
 function getAllAvailableAgents( )
-	local agents = {}
+	local AGENTS = {}
 
-	for row in db:nrows("select * from Agents where Owned = 1 and agentid not in (Select agentid from jobs)")	do
-			agents[#agents+1] = 
+	for row in db:nrows("SELECT * FROM AGENTS WHERE OWNED = 1 AND AGENTID NOT IN (SELECT AGENTID FROM JOBS)")	do
+			AGENTS[#AGENTS+1] = 
 			{
-				id = row.AgentId,
-				name = row.AgentName,
-				heat = row.Heat,
-				level= row.Level,
-				experience = row.Experience
+				id = row.AGENTID,
+				name = row.AGENTNAME,
+				heat = row.HEAT,
+				level= row.LEVEL,
+				experience = row.EXPERIENCE
 			}
 	end
 
-	return agents
+	return AGENTS
 end
 
 function getLocationforAgent(agentId)
-  local selectStr = "select Cities.Name CityName, Regions.Name RegionName from Agents, Cities, Regions where Agents.CityID = Cities.CityID and Cities.RegionID = Regions.RegionID and AgentId = "..agentId
+  local selectStr = "SELECT CITIES.NAME CITYNAME, REGIONS.NAME REGIONNAME FROM AGENTS, CITIES, REGIONS WHERE AGENTS.CITYID = CITIES.CITYID AND CITIES.REGIONID = REGIONS.REGIONID AND AGENTID = "..agentId
   print(selectStr)
   for row in db:nrows(selectStr)
     do
       local result = {
-        CityName = row.CityName,
-        RegionName= row.RegionName
+        CityName = row.CITYNAME,
+        RegionName= row.REGIONNAME
       }
 
     return result
@@ -142,7 +142,7 @@ function getLocationforAgent(agentId)
 end
 
 function setHeatforAgent(agentId, heat)
-  local updateStr = "update Agents set Heat = "..heat.." where AgentId = "..agentId
+  local updateStr = "UPDATE AGENTS SET HEAT = "..heat.." WHERE AGENTID = "..agentId
 
   db:exec(updateStr)
 end
@@ -151,29 +151,29 @@ end
 
 function getAvailableContracts() 
 	openContracts = {}
-	for row in db:nrows("select openContractID, (select Name from Cities where CityID = Origin) Origin, (select Name from Cities where CityID = Destination) Destination, Value, Duration, Risk  from opencontracts order by Value desc")	do
+	for row in db:nrows("SELECT OPENCONTRACTID, (SELECT NAME FROM CITIES WHERE CITYID = ORIGIN) ORIGIN, (SELECT NAME FROM CITIES WHERE CITYID = DESTINATION) DESTINATION, VALUE, DURATION, RISK  FROM OPENCONTRACTS ORDER BY VALUE DESC")	do
 		openContracts[#openContracts+1] = 
 		{
-			id = row.OpenContractID,
-			origin = row.Origin,
-			destination = row.Destination,
-			value= row.Value,				
-			durationHours = row.Duration,
-			risk = row.Risk
+			id = row.OPENCONTRACTID,
+			origin = row.ORIGIN,
+			destination = row.DESTINATION,
+			value= row.VALUE,				
+			durationHours = row.DURATION,
+			risk = row.RISK
 		}
 	end
 	return openContracts
 end
 
 function getContract(openContractID)
- for row in db:nrows("select openContractID, (select Name from Cities where CityID = Origin) Origin, (select Name from Cities where CityID = Destination) Destination, Value, Duration, Risk  from opencontracts where openContractID = "..openContractID) do         
+ for row in db:nrows("SELECT OPENCONTRACTID, (SELECT NAME FROM CITIES WHERE CITYID = ORIGIN) ORIGIN, (SELECT NAME FROM CITIES WHERE CITYID = DESTINATION) DESTINATION, VALUE, DURATION, RISK  FROM OPENCONTRACTS WHERE OPENCONTRACTID = "..openContractID) do         
          local openContract = 
-            {  id = row.OpenContractID,
-               origin = row.Origin,
-               destination = row.Destination,
-               value= row.Value,
-               destinationRegion = row.DestinationRegion,
-               durationHours = row.Duration
+            {  id = row.OPENCONTRACTID,
+               origin = row.ORIGIN,
+               destination = row.DESTINATION,
+               value= row.VALUE,
+               destinationRegion = row.DESTINATIONREGION,
+               durationHours = row.DURATION
             }
          return openContract
   end
@@ -181,7 +181,7 @@ end
 
 
 function getAgentHeat(Agentid)
-  for row in db:nrows("Select Heat from Agents where agentId = "..agentId) do
+  for row in db:nrows("SELECT HEAT FROM AGENTS WHERE AGENTID = "..agentId) do
       return row.Heat
   end
 end
@@ -190,22 +190,22 @@ end
 function getAllActiveJobs()
 	local jobs = {}
 
-	local selectStr = "select JobId, AgentID, (select AgentName from Agents where AgentId = Jobs.AgentID) AgentName, (Select Heat from Agents where AgentId = Jobs.AgentID) Heat, (select maxHeat from Agents where Agentid = Jobs.AgentID ) maxHeat,  (select Name from Cities where CityID = Origin) Origin, (select Name from Cities where CityID = Destination) Destination, Value, ETA, StartTime from Jobs"
+	local selectStr = "SELECT JOBID, AGENTID, (SELECT AGENTNAME FROM AGENTS WHERE AGENTID = JOBS.AGENTID) AGENTNAME, (SELECT HEAT FROM AGENTS WHERE AGENTID = JOBS.AGENTID) HEAT, (SELECT MAXHEAT FROM AGENTS WHERE AGENTID = JOBS.AGENTID ) MAXHEAT,  (SELECT NAME FROM CITIES WHERE CITYID = ORIGIN) ORIGIN, (SELECT NAME FROM CITIES WHERE CITYID = DESTINATION) DESTINATION, VALUE, ETA, STARTTIME FROM JOBS"
 
 		for row in db:nrows(selectStr)	do
 			jobs[#jobs+1] = 
 			{
-				Jobid= row.JobId,
-				agentId = row.AgentId,
-				AgentName = row.AgentName,
-				Complete = row.Complete,
-				origin = row.Origin,
-				destination = row.Destination,
-				value = row.Value,
+				Jobid= row.JOBID,
+				agentId = row.AGENTID,
+				AgentName = row.AGENTNAME,
+				Complete = row.COMPLETE,
+				origin = row.ORIGIN,
+				destination = row.DESTINATION,
+				value = row.VALUE,
 				eta = row.ETA,				
-				starttime = row.StartTime,
-				agentHeat = row.Heat,
-				agentMaxHeat = row.maxHeat
+				starttime = row.STARTTIME,
+				agentHeat = row.HEAT,
+				agentMaxHeat = row.MAXHEAT
 			}
 		end
 
@@ -218,22 +218,22 @@ function getAgentName(lookup_agentId)
          return "Test"
    end
 
-   for row in db:nrows("select AgentName from Agents where AgentId = "..lookup_agentId) do      
-      return row.AgentName
+   for row in db:nrows("SELECT AGENTNAME FROM AGENTS WHERE AGENTID = "..lookup_agentId) do      
+      return row.AGENTNAME
    end   
 end
 
 function createShipment(openContractID, agentId)
 	--insert into Jobs
 
-	local insertStr = "insert into Jobs(agentId, origin, destination, value, eta,  starttime) select "..agentId..", origin, destination, value, (duration*3600) +"..os.time()..", "..os.time().." from OpenContracts where OpenContractid = "..openContractID
+	local insertStr = "INSERT INTO JOBS(AGENTID, ORIGIN, DESTINATION, VALUE, ETA,  STARTTIME) select "..agentId..", ORIGIN, DESTINATION, VALUE, (DURATION*3600) +"..os.time()..", "..os.time().." FROM OPENCONTRACTS WHERE OPENCONTRACTID = "..openContractID
 
 	db:exec(insertStr)
 
 	print (insertStr)
 	
 	--delete from openContracts
-	local deleteStr = "delete from openContracts where openContractID = "..openContractID
+	local deleteStr = "DELETE FROM OPENCONTRACTS WHERE OPENCONTRACTID = "..openContractID
 	 db:exec(deleteStr)
 
 	print (deleteStr)
@@ -248,16 +248,16 @@ end
 
 
 function deleteExpiredContracts()
-    local deleteStr = "delete from openContracts where expiration <"..os.time()
+    local deleteStr = "DELETE FROM OPENCONTRACTS WHERE EXPIRATION <"..os.time()
     db:exec(deleteStr)
 end
 
 function createNewContracts()
-    local checkCount = "select count(*) contractCount from openContracts"
+    local checkCount = "SELECT COUNT(*) CONTRACTCOUNT FROM OPENCONTRACTS"
 
     for row in db:nrows(checkCount) do
-        if row.contractCount < contractLimit then
-            for i=row.contractCount, contractLimit-1, 1 do
+        if row.CONTRACTCOUNT < contractLimit then
+            for i=row.CONTRACTCOUNT, contractLimit-1, 1 do
                 addRandomContract()
             end
         end
@@ -268,15 +268,15 @@ end
 function addRandomContract()   
 
     --get all cities 
-    local citySelectStr = "select * from Cities"
+    local citySelectStr = "SELECT * FROM CITIES"
 
     local cities = {}
     for row in db:nrows(citySelectStr) do
         cities[#cities+1] = 
         {
-            cityID = row.CityID,
-            regionID = row.RegionID,
-            security = row.Security
+            cityID = row.CITYID,
+            regionID = row.REGIONID,
+            security = row.SECURITY
         }
     end
 
@@ -300,19 +300,19 @@ function addRandomContract()
     end
 
     --get travel time from cities
-    local travelTimeSelectStr = "select BaseTime from RegionTravelTimes where (point1 = "..originRegionID.." and point2 = "..destRegionID..") or (point1 = "..destRegionID.." and point2 = "..originRegionID..")"
+    local travelTimeSelectStr = "SELECT BASETIME FROM REGIONTRAVELTIMES WHERE (POINT1 = "..originRegionID.." AND POINT2 = "..destRegionID..") or (POINT1 = "..destRegionID.." and POINT2 = "..originRegionID..")"
 
     -- print (travelTimeSelectStr)
     local travelTime = nil
     for row in db:nrows(travelTimeSelectStr) do
-         travelTime = row.BaseTime /10	--REduce time for testing
+         travelTime = row.BASETIME /10	--REduce time for testing
     end
 
     local contractValue = 100*travelTime*(destSecurity^2) * math.random(1, 2)
     local contractRisk = destSecurity 
 
     -- print (travelTime)
-     local insertStr = "insert into OpenContracts (Origin, Destination, Value, Duration, Expiration, Risk) values ("..originCityID..", "..destCityID..","..contractValue..","..(travelTime*.5)..", "..7200+os.time()..", "..contractRisk..")"
+     local insertStr = "insert into OPENCONTRACTS (ORIGIN, DESTINATION, VALUE, DURATION, EXPIRATION, RISK) values ("..originCityID..", "..destCityID..","..contractValue..","..(travelTime*.5)..", "..7200+os.time()..", "..contractRisk..")"
 
      -- print (insertStr)
 
