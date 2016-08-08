@@ -55,11 +55,11 @@ local agents = {}
 local function displayAgentRow (event)
 	local row = event.row
 	
-	local agentNameTxt = display.newText(row, agents[row.index].name,10, 25 ,nil ,mainItemFontSize)
+	local agentNameTxt = display.newText(row, agents[row.index].name,80, 25 ,nil ,mainItemFontSize)
 	agentNameTxt:setFillColor(0);	
 	agentNameTxt.anchorX = 0
 	
-	local agentLevelTxt = display.newText(row, "lvl "..agents[row.index].level,12, 50 ,nil ,12)
+	local agentLevelTxt = display.newText(row, "lvl "..agents[row.index].level,80, 50 ,nil ,12)
 	agentLevelTxt:setFillColor(0)
 	agentLevelTxt.anchorX = 0;
 	
@@ -75,6 +75,13 @@ local function displayAgentRow (event)
 	local agentHeatTxt = display.newText(row, agents[row.index].heat, display.contentWidth-10, 25, nil, 16)
 	agentHeatTxt.anchorX = 1
 	agentHeatTxt:setFillColor(.75,0,0)
+	
+
+	local agentPortrait = display.newImage(row, portaitSheet,1,0,0)
+	agentPortrait.width= 70
+	agentPortrait.height  = 70
+	agentPortrait.anchorX = 0
+	agentPortrait.anchorY = 0
 
 end
 

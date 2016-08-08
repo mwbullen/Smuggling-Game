@@ -1,5 +1,6 @@
 require "sqlite3"
 require "settings"
+require "loadAssets"
 
 local  dbPath = system.pathForFile("data.db", system.DocumentsDirectory)
 local db = sqlite3.open(dbPath)
@@ -8,6 +9,12 @@ local contractLimit = 6
 
 ----------System operations
 
+
+--------Asset operations
+
+function getPortrait(portraitIndex)
+  return display.newImage(portraitSheet, portraitIndex)
+end
 
 ---------New Game
 
