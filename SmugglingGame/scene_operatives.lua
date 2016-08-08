@@ -52,40 +52,6 @@ end
 
 local agents = {}
 
-local function displayAgentRow (event)
-	local row = event.row
-	
-	local agentNameTxt = display.newText(row, agents[row.index].name,80, 25 ,nil ,mainItemFontSize)
-	agentNameTxt:setFillColor(0);	
-	agentNameTxt.anchorX = 0
-	
-	local agentLevelTxt = display.newText(row, "lvl "..agents[row.index].level,80, 50 ,nil ,12)
-	agentLevelTxt:setFillColor(0)
-	agentLevelTxt.anchorX = 0;
-	
-	local agentStatusTxt = display.newText(row,"", row.contentWidth/2, 50, nil, 12)
-	agentStatusTxt:setFillColor(0,.5,0);	
-
-	local agentLocation = getLocationforAgent(agents[row.index].id)
-
-	local agentLocationTxt = display.newText(row,agentLocation.RegionName, display.contentWidth - 10, 50, nil, 14)
-	agentLocationTxt.anchorX = 1
-	agentLocationTxt:setFillColor(0,0,.5)
-
-	local agentHeatTxt = display.newText(row, agents[row.index].heat, display.contentWidth-10, 25, nil, 16)
-	agentHeatTxt.anchorX = 1
-	agentHeatTxt:setFillColor(.75,0,0)
-	
-	local agentPortaitIndex = getAgentPortraitIndex(agents[row.index].id)
-
-	local agentPortrait = display.newImage(row, portaitSheet,agentPortaitIndex,0,0)
-	agentPortrait.width= 65
-	agentPortrait.height  = 65
-	agentPortrait.anchorX = 0
-	agentPortrait.anchorY = 0
-
-end
-
 function scene:show( event )
 	local sceneGroup = self.view
 	local phase = event.phase
@@ -97,23 +63,9 @@ function scene:show( event )
 		-- 
 		-- INSERT code here to make the scene come alive
 		-- e.g. start timers, begin animation, play audio, etc.
-
-		
-		local tableView = widget.newTableView
-		{
-			onRowRender = displayAgentRow,
-			top = menuBarHeight *.5,
-			height=display.contentHeight -100
-		}
+	
+		tableView = getAgentTableView()
 		sceneGroup:insert(tableView)
-
-		agents = getAllOwnedAgents()
-
-		-- for row in db:nrows("select * from Agents where Owned = 1")	do
-		for index, value in	ipairs (agents) do
-			tableView:insertRow{ topPadding=10, bottomPadding=10, rowHeight = 70, rowColor = {default = {.678431, 0.847059,0.901961}}}
-		end
-
 
 	end	
 end
