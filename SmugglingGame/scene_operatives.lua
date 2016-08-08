@@ -76,10 +76,11 @@ local function displayAgentRow (event)
 	agentHeatTxt.anchorX = 1
 	agentHeatTxt:setFillColor(.75,0,0)
 	
+	local agentPortaitIndex = getAgentPortraitIndex(agents[row.index].id)
 
-	local agentPortrait = display.newImage(row, portaitSheet,1,0,0)
-	agentPortrait.width= 70
-	agentPortrait.height  = 70
+	local agentPortrait = display.newImage(row, portaitSheet,agentPortaitIndex,0,0)
+	agentPortrait.width= 65
+	agentPortrait.height  = 65
 	agentPortrait.anchorX = 0
 	agentPortrait.anchorY = 0
 

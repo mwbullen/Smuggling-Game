@@ -16,6 +16,14 @@ function getPortrait(portraitIndex)
   return display.newImage(portraitSheet, portraitIndex)
 end
 
+function getAgentPortraitIndex(agentID)
+  local selectStr = "SELECT PORTRAIT_INDEX FROM AGENTS WHERE AGENTID = "..agentID
+
+  for row in db:nrows(selectStr) do
+    return row.PORTRAIT_INDEX
+  end
+end
+
 ---------New Game
 
 function createAgents()
