@@ -42,16 +42,25 @@ function completeShipment(Jobid)
 	--get cash value of shipment, add to current chash
   local updateStr ="UPDATE PLAYERSTATUS SET CURRENTMONEY = CURRENTMONEY + (SELECT VALUE FROM JOBS WHERE JOBID = "..Jobid..")" 
   print(updateStr)
-	db:exec(updateStr)
+	print(db:exec(updateStr))
 
 
-  local updateStr = "UPDATE AGENTS SET CITYID = (SELECT DESTINATION FROM JOBS WHERE JOBID = "..JOBID..") WHERE AGENTID = (SELECT AGENTID FROM JOBS WHERE JOBID="..JOBID..")"
-  print(updateStr)
-  db:exec(updateStr)
+  local updateStr2 = "UPDATE AGENTS SET CITYID = (SELECT DESTINATION FROM JOBS WHERE JOBID = "..Jobid..") WHERE AGENTID = (SELECT AGENTID FROM JOBS WHERE JOBID="..Jobid..")"
+  print(updateStr2)
+  db:exec(updateStr2)
 
   deleteJob(Jobid)
   
   updateStatusBar()
+end
+
+function calculateHeatTime(AgentId)
+  --based on current heat and heat loss rate, calculate time to heat-zero
+    -- 
+    local updateSql = "update AGENTS set HEATZEROTIME = "..os.time().." + (HEAT/HEATLOSSPERMIN)*60.. where AGENTID = "..AgentId
+
+    db:exec(updateSql)
+    
 end
 
 function deleteJob(Jobid)
@@ -68,7 +77,7 @@ function bustedShipment(Jobid)
 end
 
 function getJobInfo(Jobid)
-    local selectStr = "SELECT JOBID, AGENTID, (SELECT AGENTNAME FROM AGENTS WHERE AGENTID = JOBS.AGENTID) AGENTNAME, COMPLETE,  (SELECT NAME FROM CITIES WHERE CITYID = ORIGIN) ORIGIN, (SELECT NAME FROM CITIES WHERE CITYID = DESTINATION) DESTINATION, VALUE, ETA, STARTTIME, (SELECT SECURITY FROM CITIES WHERE CITYID = DESTINATION) SECURITY, (SELECT HEAT FROM AGENTS WHERE AGENTID = JOBS.AGENTID) AGENTHEAT, (SELECT MAXHEAT FROM AGENTS WHERE AGENTID = JOBS.AGENTID) AGENTMAXHEAT FROM JOBS WHERE JOBID = "..JOBID
+    local selectStr = "SELECT JOBID, AGENTID, (SELECT AGENTNAME FROM AGENTS WHERE AGENTID = JOBS.AGENTID) AGENTNAME, COMPLETE,  (SELECT NAME FROM CITIES WHERE CITYID = ORIGIN) ORIGIN, (SELECT NAME FROM CITIES WHERE CITYID = DESTINATION) DESTINATION, VALUE, ETA, STARTTIME, (SELECT SECURITY FROM CITIES WHERE CITYID = DESTINATION) SECURITY, (SELECT HEAT FROM AGENTS WHERE AGENTID = JOBS.AGENTID) AGENTHEAT, (SELECT MAXHEAT FROM AGENTS WHERE AGENTID = JOBS.AGENTID) AGENTMAXHEAT FROM JOBS WHERE JOBID = "..Jobid
 
     print(selectStr)
       for row in db:nrows(selectStr)   do
@@ -141,10 +150,12 @@ function getLocationforAgent(agentId)
   end
 end
 
-function setHeatforAgent(agentId, heat)
-  local updateStr = "UPDATE AGENTS SET HEAT = "..heat.." WHERE AGENTID = "..agentId
+function setHeatforAgent(AgentId, heat)
+  local updateStr = "UPDATE AGENTS SET HEAT = "..heat.." WHERE AGENTID = "..AgentId
 
   db:exec(updateStr)
+
+  calculateHeatTime(AgentId)
 end
 
 -------

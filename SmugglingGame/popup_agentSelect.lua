@@ -43,14 +43,26 @@ end
 local function displayAgentRow (event)
 	local row = event.row
 	
-	local agentNameTxt = display.newText(row, agents[row.index].name,row.contentWidth*.6, 0 ,nil ,20)
+	local agentNameTxt = display.newText(row, agents[row.index].name,10, 25 ,nil ,mainItemFontSize)
 	agentNameTxt:setFillColor(0);	
-	agentNameTxt.y= 20
+	agentNameTxt.anchorX = 0
 
-	local agentLevelTxt = display.newText(row, agents[row.index].level,row.contentWidth*.3, 0 ,nil ,14)
-	agentLevelTxt:setFillColor(0)
-	agentLevelTxt.anchorX = 0;
-	agentLevelTxt.y= 40
+	-- local agentNameTxt = display.newText(row, agents[row.index].name,10, 0 ,nil ,mainItemFontSize)
+	-- agentNameTxt.anchorX = 0
+	-- agentNameTxt:setFillColor(0);	
+	-- agentNameTxt.y= 20
+
+	local agentLocation = getLocationforAgent(agents[row.index].id)
+
+	local agentLocationTxt = display.newText(row,agentLocation.RegionName, display.contentWidth - 10, 50, nil, 14)
+	agentLocationTxt.anchorX = 1
+	agentLocationTxt:setFillColor(0,0,.5)
+	
+
+	-- local agentLevelTxt = display.newText(row, agents[row.index].level,row.contentWidth*.3, 0 ,nil ,14)
+	-- agentLevelTxt:setFillColor(0)
+	-- agentLevelTxt.anchorX = 0;
+	-- agentLevelTxt.y= 40
 end
 
 function scene:show( event )
