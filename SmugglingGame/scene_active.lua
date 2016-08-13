@@ -74,18 +74,20 @@ end
 
 local function selectJobRow(event)	
 
-	--Launch security form
-	 local options = {params={Jobid = jobs[event.row.index].Jobid}}
-	 print(options.params.Jobid)
-	 composer.gotoScene("popup_enterCustoms", options)
+	
 
 	--Confirm ready for customs, if so complete run and get paid
 	local secondsRemaining = jobs[event.row.index].eta - os.time()
+
+	print("Remaining time")
+	print (secondsRemaining)
 	if secondsRemaining <= 0 then
-				
-		-- completeShipment(jobs[event.row.index].Jobid)	
-		-- updateStatusBar()
-		-- composer.gotoScene("scene_active")
+
+		--Launch security form
+	 local options = {params={Jobid = jobs[event.row.index].Jobid}}
+	 print(options.params.Jobid)
+	 composer.gotoScene("popup_enterCustoms", options)				
+		
 	end
 
 end
@@ -109,7 +111,7 @@ function scene:create( event )
 	sceneGroup:insert( bg )
 	
 	tableView = widget.newTableView
-		{		 height=display.contentHeight -100,
+		{	 height=display.contentHeight -100,
 			onRowRender = displayJobRow,
 			onRowTouch = selectJobRow,
 			 top = menuBarHeight *.5
