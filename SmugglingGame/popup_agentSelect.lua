@@ -13,7 +13,7 @@ local db = sqlite3.open(path)
 local composer = require( "composer" )
 local scene = composer.newScene()
 
-local agents = {}
+-- local agents = {}
 local openContractID
 
 local function backAgentSelBtnClick(event)       
@@ -25,6 +25,7 @@ local function selectAgentRow(event)
 	-- local row = event.row
 	-- composer.showOverlay( "popup_createShipment")
 
+	print(event)
 	local options = {params = {agentId = agents[event.row.index].id, openContractID = openContractID}}
 	composer.gotoScene("popup_createShipment", options)
 end
@@ -36,33 +37,6 @@ function scene:create( event )
     backBtn:addEventListener("tap", backAgentSelBtnClick)
     backBtn.x = 75
     sceneGroup:insert(backBtn)
-end
-
-
-
-local function displayAgentRow (event)
-	local row = event.row
-	
-	local agentNameTxt = display.newText(row, agents[row.index].name,10, 25 ,nil ,mainItemFontSize)
-	agentNameTxt:setFillColor(0);	
-	agentNameTxt.anchorX = 0
-
-	-- local agentNameTxt = display.newText(row, agents[row.index].name,10, 0 ,nil ,mainItemFontSize)
-	-- agentNameTxt.anchorX = 0
-	-- agentNameTxt:setFillColor(0);	
-	-- agentNameTxt.y= 20
-
-	local agentLocation = getLocationforAgent(agents[row.index].id)
-
-	local agentLocationTxt = display.newText(row,agentLocation.RegionName, display.contentWidth - 10, 50, nil, 14)
-	agentLocationTxt.anchorX = 1
-	agentLocationTxt:setFillColor(0,0,.5)
-	
-
-	-- local agentLevelTxt = display.newText(row, agents[row.index].level,row.contentWidth*.3, 0 ,nil ,14)
-	-- agentLevelTxt:setFillColor(0)
-	-- agentLevelTxt.anchorX = 0;
-	-- agentLevelTxt.y= 40
 end
 
 function scene:show( event )
@@ -79,21 +53,10 @@ function scene:show( event )
 
 		openContractID = event.params.openContractID
 		
-		local tableView = widget.newTableView
-		{
-			height=200,
-			onRowRender = displayAgentRow,
-			onRowTouch = selectAgentRow,
-			top = menuBarHeight *.5
-		}
+
+		tableView = getAgentTableView(true, selectAgentRow)
+		-- tableView.onRowTouch = selectAgentRow
 		sceneGroup:insert(tableView)
-
-		agents = getAllAvailableAgents()
-
-		for i = 1, #agents, 1 do
-			tableView:insertRow{ topPadding=10, bottomPadding=10, rowHeight = 70, rowColor = {default = {.678431, 0.847059,0.901961}}}
-		end
-		
 
 	end	
 end

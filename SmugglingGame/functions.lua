@@ -9,6 +9,8 @@ local contractLimit = 6
 
 local widget = require "widget"
 
+ agents = {}
+
 ----------System operations
 
 --------Display objects
@@ -48,16 +50,37 @@ local function displayAgentRow (event)
 
 end
 
+-- local function selectAgentRow(event) 
+--   -- local row = event.row
+--   -- composer.showOverlay( "popup_createShipment")
 
-function getAgentTableView() 
+--   -- print("Asdfasdf")
+--   local options = {params = {agentId = agents[event.row.index].id, openContractID = openContractID}}
+--   composer.gotoScene("popup_createShipment", options)
+-- end
+
+
+function getAgentTableView(p_limitToAvailable, p_selectRowFunction) 
+
+    local limitToAvailable = false or p_limitToAvailable
+
     local tableView = widget.newTableView
     {
       onRowRender = displayAgentRow,
+      onRowTouch = p_selectRowFunction,
       top = menuBarHeight *.5,
       height=display.contentHeight -100
     }
 
-    agents = getAllOwnedAgents()
+    
+    
+
+    if limitToAvailable == true  then
+      agents = getAllAvailableAgents()
+    else
+      agents = getAllOwnedAgents()
+    end 
+    
 
     -- for row in db:nrows("select * from Agents where Owned = 1")  do
     for index, value in ipairs (agents) do
