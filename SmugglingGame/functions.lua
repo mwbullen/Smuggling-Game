@@ -12,6 +12,13 @@ local widget = require "widget"
  agents = {}
 
 ----------System operations
+-- Handle the "applicationExit" event to close the database
+function onSystemEvent( event )
+  print ("onSystemEvent")
+    if ( event.type == "applicationExit" ) then              
+        print(db:close())
+    end
+end
 
 --------Display objects
 
@@ -72,8 +79,6 @@ function getAgentTableView(p_limitToAvailable, p_selectRowFunction)
       height=display.contentHeight -100
     }
 
-    
-    
 
     if limitToAvailable == true  then
       agents = getAllAvailableAgents()
@@ -109,8 +114,8 @@ end
 ---------New Game
 
 function createAgents()
-   local  dbPath = system.pathForFile("data.db", system.DocumentsDirectory)
-   local db = sqlite3.open(dbPath)
+   -- local  dbPath = system.pathForFile("data.db", system.DocumentsDirectory)
+   -- local db = sqlite3.open(dbPath)
 
      local randomNames = {"Ghost", "Iceman", "Nighthawk", "Red Fox"}
 
@@ -144,7 +149,7 @@ function completeShipment(Jobid)
 
   local updateStr2 = "UPDATE AGENTS SET CITYID = (SELECT DESTINATION FROM JOBS WHERE JOBID = "..Jobid..") WHERE AGENTID = (SELECT AGENTID FROM JOBS WHERE JOBID="..Jobid..")"
   print(updateStr2)
-  db:exec(updateStr2)
+  print(db:exec(updateStr2))
 
   deleteJob(Jobid)
   
@@ -336,15 +341,13 @@ function createShipment(openContractID, agentId)
 
 	local insertStr = "INSERT INTO JOBS(AGENTID, ORIGIN, DESTINATION, VALUE, ETA,  STARTTIME) select "..agentId..", ORIGIN, DESTINATION, VALUE, (DURATION*3600) +"..os.time()..", "..os.time().." FROM OPENCONTRACTS WHERE OPENCONTRACTID = "..openContractID
 
-	db:exec(insertStr)
+	print(db:exec(insertStr))
 
-	print (insertStr)
 	
 	--delete from openContracts
 	local deleteStr = "DELETE FROM OPENCONTRACTS WHERE OPENCONTRACTID = "..openContractID
-	 db:exec(deleteStr)
-
-	print (deleteStr)
+	print(db:exec(deleteStr))
+	
 end
 
 -----------New game initialization

@@ -26,6 +26,7 @@ end
 
 local function confirmBtnClick(event) 
       --Create new shipment
+      
       createShipment(openContractID, agentId)
       composer.gotoScene("scene_blackMarket")
 
@@ -77,12 +78,7 @@ function scene:create( event )
    sceneGroup:insert(confirmBtm)
    end
 
-
-
-   
-
    local selectAgent = display.newText(agentSelecttext, 150, 150, native.systemFont, 24 )
-   
 
    sceneGroup:insert(selectAgent)    
    selectAgent:addEventListener("tap", selectAgentClick)  

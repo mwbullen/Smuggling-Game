@@ -20,12 +20,14 @@ local statusBarArea
 local dbPath = system.pathForFile("data.db", system.DocumentsDirectory)
  
 
-
 function doesDBExist()
-  local dbFile = io.open(dbPath, "r") 
+  local dbFile = io.open(dbPath) 
+  print(dbPath)
+  print(dbFile)
 
   if (dbFile ) then
-  		return true
+  		dbFile:close()
+  		return true  		
   else 
   		return false
   end
@@ -66,7 +68,9 @@ end
 -- create the actual tabBar widget
 
 function InitTabDisplay() 
-require "functions"
+	require "functions"
+
+	Runtime:addEventListener( "system", onSystemEvent )
 	
 	local tabButtons = {
 	{ label="Shipments", defaultFile="icons/icon1.png", overFile="icons/icon1-down.png", width = 32, height = 32, onPress=onFirstView, selected=true },

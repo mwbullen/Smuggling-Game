@@ -24,8 +24,7 @@ end
 local function selectAgentRow(event) 
 	-- local row = event.row
 	-- composer.showOverlay( "popup_createShipment")
-
-	print(event)
+	
 	local options = {params = {agentId = agents[event.row.index].id, openContractID = openContractID}}
 	composer.gotoScene("popup_createShipment", options)
 end
