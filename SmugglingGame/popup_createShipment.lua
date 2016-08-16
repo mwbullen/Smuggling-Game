@@ -47,7 +47,9 @@ function scene:create( event )
    -- Initialize the scene here.
    -- Example: add display objects to "sceneGroup", add touch listeners, etc.
 
-   local bg = display.newRect( 0, display.contentHeight*.25 , display.contentWidth, display.contentHeight *.75)
+   local sceneTop = (display.contentHeight*.25)- menuBarHeight
+
+   local bg = display.newRect( 0, sceneTop , display.contentWidth, (display.contentHeight *.5) - menuBarHeight)
    bg.anchorX = 0
    bg.anchorY = 0
    bg:setFillColor( 0,.24,0 )
@@ -58,10 +60,10 @@ function scene:create( event )
 
    openContract = getContract(openContractID)
 
-   local tripItintxt = display.newText(openContract.origin.." to "..openContract.destination, 150, 40, native.systemFont, 22)
+   local tripItintxt = display.newText(openContract.origin.." to "..openContract.destination, 150, sceneTop + 30, native.systemFont, 22)
    sceneGroup:insert(tripItintxt)
 
-   local tripTimetxt = display.newText("Time: "..openContract.durationHours.."h", 150, 80,native.systemFont, 16)
+   local tripTimetxt = display.newText("Time: "..openContract.durationHours.."h", 150, sceneTop + 60,native.systemFont, 16)
    sceneGroup:insert(tripTimetxt)      
 
    
@@ -72,18 +74,18 @@ function scene:create( event )
    else
       agentSelecttext = getAgentName(agentId)
 
-         local confirmBtm = display.newText( "Confirm", 0, 350, native.systemFont, 32 )
-   confirmBtm:addEventListener("tap", confirmBtnClick)
-   confirmBtm.x = 200
-   sceneGroup:insert(confirmBtm)
+      local confirmBtm = display.newText( "Confirm", 0, sceneTop + 250, native.systemFont, 32 )
+      confirmBtm:addEventListener("tap", confirmBtnClick)
+      confirmBtm.x = 200
+      sceneGroup:insert(confirmBtm)
    end
 
-   local selectAgent = display.newText(agentSelecttext, 150, 150, native.systemFont, 24 )
+   local selectAgent = display.newText(agentSelecttext, 150, sceneTop + 150, native.systemFont, 24 )
 
    sceneGroup:insert(selectAgent)    
    selectAgent:addEventListener("tap", selectAgentClick)  
 
-   local backBtn = display.newText( "Back", 0, 350, native.systemFont, 32 )
+   local backBtn = display.newText( "Back", 0, sceneTop + 250, native.systemFont, 32 )
    backBtn:addEventListener("tap", backBtnClick)
    backBtn.x = 75
    sceneGroup:insert(backBtn)
