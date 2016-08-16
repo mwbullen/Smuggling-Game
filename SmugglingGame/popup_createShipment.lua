@@ -47,7 +47,7 @@ function scene:create( event )
    -- Initialize the scene here.
    -- Example: add display objects to "sceneGroup", add touch listeners, etc.
 
-   local bg = display.newRect( 0, 0, display.contentWidth, display.contentHeight )
+   local bg = display.newRect( 0, display.contentHeight*.25 , display.contentWidth, display.contentHeight *.75)
    bg.anchorX = 0
    bg.anchorY = 0
    bg:setFillColor( 0,.24,0 )

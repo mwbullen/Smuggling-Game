@@ -41,7 +41,7 @@ end
 function scene:show( event )
 	local sceneGroup = self.view
 	local phase = event.phase
-	
+
 	if phase == "will" then
 		-- Called when the scene is still off screen and is about to move on screen
 	elseif phase == "did" then
@@ -50,10 +50,11 @@ function scene:show( event )
 		-- INSERT code here to make the scene come alive
 		-- e.g. start timers, begin animation, play audio, etc.
 
-		openContractID = event.params.openContractID
-		
 
-		tableView = getAgentTableView(true, selectAgentRow)
+		openContractID = event.params.openContractID
+		local jobSourceRegionid = getsSourceRegionForContract(openContractID)
+
+		tableView = getAgentTableView(true, selectAgentRow, jobSourceRegionid)
 		-- tableView.onRowTouch = selectAgentRow
 		sceneGroup:insert(tableView)
 

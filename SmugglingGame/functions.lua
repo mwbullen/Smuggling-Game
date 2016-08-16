@@ -67,10 +67,12 @@ end
 -- end
 
 
-function getAgentTableView(p_limitToAvailable, p_selectRowFunction) 
+function getAgentTableView(p_limitToAvailable, p_selectRowFunction, p_limitToRegionID) 
 
     local limitToAvailable = false or p_limitToAvailable
+    local limitToRegionid = nil or p_limitToRegionID
 
+    print (limitToRegionid)
     local tableView = widget.newTableView
     {
       onRowRender = displayAgentRow,
@@ -81,9 +83,13 @@ function getAgentTableView(p_limitToAvailable, p_selectRowFunction)
 
 
     if limitToAvailable == true  then
-      agents = getAllAvailableAgents()
-    else
-      agents = getAllOwnedAgents()
+        if limitToRegionid == nil then 
+          agents = getAllAvailableAgents()
+        else
+          agents = getAllAvailableAgentsforRegion(limitToRegionid)
+        end
+    else      
+        agents = getAllOwnedAgents()
     end 
     
 
@@ -203,6 +209,19 @@ function getJobInfo(Jobid)
     end
 end
 
+function getsSourceRegionForContract(p_openContractId)
+  local selectStr = "SELECT REGIONID FROM CITIES, OPENCONTRACTS WHERE CITIES.CITYID = OPENCONTRACTS.ORIGIN AND OPENCONTRACTS.OPENCONTRACTID = "..p_openContractId
+  print (selectStr)
+
+  for row in db:nrows(selectStr) do
+      local region = {
+      regionID = row.REGIONID
+      }
+
+      return region.regionID
+  end
+
+end
 ----------
 function getAllOwnedAgents( )
 	local AGENTS = {}
@@ -237,6 +256,27 @@ function getAllAvailableAgents( )
 
 	return AGENTS
 end
+
+function getAllAvailableAgentsforRegion(p_regionID )
+  local AGENTS = {}
+
+  local selectStr = "SELECT * FROM AGENTS WHERE OWNED = 1 AND CITYID IN (SELECT CITYID FROM CITIES WHERE REGIONID = "..p_regionID.." ) AND AGENTID NOT IN (SELECT AGENTID FROM JOBS) "
+
+  print (selectStr)
+  for row in db:nrows(selectStr) do
+      AGENTS[#AGENTS+1] = 
+      {
+        id = row.AGENTID,
+        name = row.AGENTNAME,
+        heat = row.HEAT,
+        level= row.LEVEL,
+        experience = row.EXPERIENCE
+      }
+  end
+
+  return AGENTS
+end
+
 
 function getLocationforAgent(agentId)
   local selectStr = "SELECT CITIES.NAME CITYNAME, REGIONS.NAME REGIONNAME FROM AGENTS, CITIES, REGIONS WHERE AGENTS.CITYID = CITIES.CITYID AND CITIES.REGIONID = REGIONS.REGIONID AND AGENTID = "..agentId
