@@ -9,7 +9,7 @@ local contractLimit = 6
 
 local widget = require "widget"
 
- agents = {}
+agents = {}
 
 ----------System operations
 -- Handle the "applicationExit" event to close the database
@@ -22,7 +22,6 @@ end
 
 --------Display objects
 
-
 local function displayAgentRow (event)
   local row = event.row
   
@@ -30,22 +29,54 @@ local function displayAgentRow (event)
   agentNameTxt:setFillColor(0); 
   agentNameTxt.anchorX = 0
   
-  local agentLevelTxt = display.newText(row, "lvl "..agents[row.index].level,80, 50 ,nil ,12)
+  local agentLevelTxt = display.newText(row, "lvl "..agents[row.index].level,display.contentWidth-10, 25, nil, 16)
   agentLevelTxt:setFillColor(0)
-  agentLevelTxt.anchorX = 0;
+  agentLevelTxt.anchorX = 1;
   
   local agentStatusTxt = display.newText(row,"", row.contentWidth/2, 50, nil, 12)
   agentStatusTxt:setFillColor(0,.5,0);  
 
-  local agentLocation = getLocationforAgent(agents[row.index].id)
+  -- local agentHeatTxt = display.newText(row, agents[row.index].heat, display.contentWidth-10, 25, nil, 16)
+  -- agentHeatTxt.anchorX = 1
+  -- agentHeatTxt:setFillColor(.75,0,0)
+  local agentJob = getJobInfoforAgent(agents[row.index].id)
 
-  local agentLocationTxt = display.newText(row,agentLocation.RegionName, display.contentWidth - 10, 50, nil, 14)
-  agentLocationTxt.anchorX = 1
-  agentLocationTxt:setFillColor(0,0,.5)
+  if agentJob == nil then     --just show current location
+      local agentLocation = getLocationforAgent(agents[row.index].id)
+      local agentLocationTxt = display.newText(row,agentLocation.RegionName, display.contentWidth - 10, 50, nil, 14)
+      agentLocationTxt.anchorX = 1
+      agentLocationTxt:setFillColor(0,0,.5)
+  else  --show job info
+      local secondsRemaining = agentJob.eta - os.time()
+      if secondsRemaining > 0 then
+          local jobProgress = widget.newProgressView({left = 80, top = 40, width = 190, isAnimated = true })
+          row:insert(jobProgress)   
+          -- jobs[row.index].progressView = jobProgress
 
-  local agentHeatTxt = display.newText(row, agents[row.index].heat, display.contentWidth-10, 25, nil, 16)
-  agentHeatTxt.anchorX = 1
-  agentHeatTxt:setFillColor(.75,0,0)
+          local totalJobSeconds = agentJob.eta - agentJob.starttime 
+          local elapsedSeconds = totalJobSeconds - secondsRemaining
+          local percentComplete = elapsedSeconds / totalJobSeconds
+          
+          jobProgress:setProgress(percentComplete)
+
+          local remainingTimeTxt = display.newText(row,math.round(secondsRemaining/60,2.2).." min", display.contentWidth - 30, 45, nil, 12)
+          -- jobs[row.index].remainingTimeTxt = remainingTimeTxt
+          remainingTimeTxt:setFillColor(0)
+
+          local originTxt = display.newText(row,agentJob.origin, 80, 55, nil, 12)
+          originTxt:setFillColor(0)
+          originTxt.anchorX =0
+
+          local destTxt = display.newText(row,agentJob.destination, 270, 55, nil, 12)
+          destTxt:setFillColor(0)
+          destTxt.anchorX =1
+      
+      else
+          local jobReadyMsg = display.newText(row, "Ready for Customs",row.contentWidth/2, 50, nil, 15) 
+          jobReadyMsg:setFillColor(.0,.6,.0)
+
+      end 
+  end
   
   local agentPortaitIndex = getAgentPortraitIndex(agents[row.index].id)
 
@@ -57,14 +88,6 @@ local function displayAgentRow (event)
 
 end
 
--- local function selectAgentRow(event) 
---   -- local row = event.row
---   -- composer.showOverlay( "popup_createShipment")
-
---   -- print("Asdfasdf")
---   local options = {params = {agentId = agents[event.row.index].id, openContractID = openContractID}}
---   composer.gotoScene("popup_createShipment", options)
--- end
 
 
 function getAgentTableView(p_limitToAvailable, p_selectRowFunction, p_limitToRegionID) 
@@ -95,7 +118,11 @@ function getAgentTableView(p_limitToAvailable, p_selectRowFunction, p_limitToReg
 
     -- for row in db:nrows("select * from Agents where Owned = 1")  do
     for index, value in ipairs (agents) do
-      tableView:insertRow{ topPadding=10, bottomPadding=10, rowHeight = 70, rowColor = {default = {.678431, 0.847059,0.901961}}}
+      tableView:insertRow{ 
+        topPadding=10, bottomPadding=10, rowHeight = 70, rowColor = {default = {.678431, 0.847059,0.901961},
+        params = {agentid = agents[index].id}
+      }
+    }
     end
 
     return tableView
@@ -207,6 +234,33 @@ function getJobInfo(Jobid)
          }
          return Job
     end
+end
+
+function getJobInfoforAgent(p_agentid)
+    local selectStr = "SELECT JOBID, AGENTID, (SELECT AGENTNAME FROM AGENTS WHERE AGENTID = JOBS.AGENTID) AGENTNAME, COMPLETE,  (SELECT NAME FROM CITIES WHERE CITYID = ORIGIN) ORIGIN, (SELECT NAME FROM CITIES WHERE CITYID = DESTINATION) DESTINATION, VALUE, ETA, STARTTIME, (SELECT SECURITY FROM CITIES WHERE CITYID = DESTINATION) SECURITY, (SELECT HEAT FROM AGENTS WHERE AGENTID = JOBS.AGENTID) AGENTHEAT, (SELECT MAXHEAT FROM AGENTS WHERE AGENTID = JOBS.AGENTID) AGENTMAXHEAT FROM JOBS WHERE AGENTID = "..p_agentid
+    
+      print(selectStr)
+      for row in db:nrows(selectStr)   do
+         local Job = 
+         {
+            id= row.JOBID,
+            AgentId = row.AGENTID,
+            AgentName = row.AGENTNAME,
+            AgentHeat = row.AGENTHEAT,
+            AgentMaxHeat = row.AGENTMAXHEAT,
+            Complete = row.COMPLETE,
+            origin = row.ORIGIN,
+            destination = row.DESTINATION,
+            value = row.VALUE,
+            eta = row.ETA,          
+            starttime = row.STARTTIME, 
+            security = row.SECURITY,
+
+         }
+         return Job
+    end
+
+    return nil
 end
 
 function getsSourceRegionForContract(p_openContractId)

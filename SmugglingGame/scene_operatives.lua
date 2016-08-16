@@ -14,6 +14,43 @@ local db = sqlite3.open(path)
 local composer = require( "composer" )
 local scene = composer.newScene()
 
+local function selectJobRow(event)	
+	--Confirm ready for customs, if so complete run and get paid
+	-- local secondsRemaining = jobs[event.row.index].eta - os.time()
+
+	local agentJob = getJobInfoforAgent(agents[event.row.index].id)
+	-- print("Remaining time")
+	-- print (secondsRemaining)
+
+	if agentJob == nil then
+	else
+		local secondsRemaining = agentJob.eta - os.time()
+		if secondsRemaining <= 0 then
+
+			--Launch security form
+		 	local options = {params={Jobid = agentJob.id}}
+		 	-- print(options.params.Jobid)
+		 	composer.gotoScene("popup_enterCustoms", options)				
+			
+		end
+	end
+end
+
+local function updateJobProgress()
+	for i=1, #agents, 1 do		
+		local totalJobSeconds = agentJob.eta - agentJob.starttime 
+  		local elapsedSeconds = totalJobSeconds - secondsRemaining
+    	local percentComplete = elapsedSeconds / totalJobSeconds
+          
+    	jobProgress:setProgress(percentComplete)	
+	end
+	
+
+	timer.performWithDelay(1000,updateJobProgress)
+end
+
+-----------
+
 function scene:create( event )
 	local sceneGroup = self.view
 	
@@ -34,23 +71,23 @@ function scene:create( event )
 	title.x = display.contentWidth * 0.5
 	title.y = 125
 	
-	local newTextParams = { text = "Show Operatives Here", 
-							x = 0, y = 0, 
-							width = 310, height = 310, 
-							font = native.systemFont, fontSize = 14, 
-							align = "center" }
-	local summary = display.newText( newTextParams )
-	summary:setFillColor( 0 ) -- black
-	summary.x = display.contentWidth * 0.5 + 10
-	summary.y = title.y + 215
+	-- local newTextParams = { text = "Show Operatives Here", 
+	-- 						x = 0, y = 0, 
+	-- 						width = 310, height = 310, 
+	-- 						font = native.systemFont, fontSize = 14, 
+	-- 						align = "center" }
+	-- local summary = display.newText( newTextParams )
+	-- summary:setFillColor( 0 ) -- black
+	-- summary.x = display.contentWidth * 0.5 + 10
+	-- summary.y = title.y + 215
 	
 	-- all objects must be added to group (e.g. self.view)
 	sceneGroup:insert( bg )
 	sceneGroup:insert( title )
-	sceneGroup:insert( summary )
+	-- sceneGroup:insert( summary )
 end
 
-local agents = {}
+-- local agents = {}
 
 function scene:show( event )
 	local sceneGroup = self.view
@@ -64,7 +101,7 @@ function scene:show( event )
 		-- INSERT code here to make the scene come alive
 		-- e.g. start timers, begin animation, play audio, etc.
 	
-		tableView = getAgentTableView()
+		tableView = getAgentTableView(false, selectJobRow, nil)
 		sceneGroup:insert(tableView)
 
 	end	

@@ -21,8 +21,8 @@ local function displayJobRow(event)
 	agentNameTxt:setFillColor(0)
 
 
-	local agentHeat = display.newText(row, jobs[row.index].agentHeat.."/"..jobs[row.index].agentMaxHeat, display.contentWidth*.9, 20, nil, 16)
-	agentHeat:setFillColor(.75,0,0)
+	-- local agentHeat = display.newText(row, jobs[row.index].agentHeat.."/"..jobs[row.index].agentMaxHeat, display.contentWidth*.9, 20, nil, 16)
+	-- agentHeat:setFillColor(.75,0,0)
 
 	local secondsRemaining = jobs[row.index].eta - os.time()
 	if secondsRemaining > 0 then
@@ -73,14 +73,11 @@ local function updateJobProgress()
 end
 
 local function selectJobRow(event)	
-
-	
-
 	--Confirm ready for customs, if so complete run and get paid
 	local secondsRemaining = jobs[event.row.index].eta - os.time()
 
-	print("Remaining time")
-	print (secondsRemaining)
+	-- print("Remaining time")
+	-- print (secondsRemaining)
 	if secondsRemaining <= 0 then
 
 		--Launch security form

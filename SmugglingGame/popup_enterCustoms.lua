@@ -27,7 +27,7 @@ end
 local function confirmBtnClick(event) 
       --Create new shipment
      
-      composer.gotoScene("scene_active")
+      composer.gotoScene("scene_operatives")
       
 end
 

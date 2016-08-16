@@ -73,8 +73,8 @@ function InitTabDisplay()
 	Runtime:addEventListener( "system", onSystemEvent )
 	
 	local tabButtons = {
-	{ label="Shipments", defaultFile="icons/icon1.png", overFile="icons/icon1-down.png", width = 32, height = 32, onPress=onFirstView, selected=true },
-	{ label="Agents", defaultFile="icons/icon2.png", overFile="icons/icon2-down.png", width = 32, height = 32, onPress=onSecondView },
+	-- { label="Shipments", defaultFile="icons/icon1.png", overFile="icons/icon1-down.png", width = 32, height = 32, onPress=onFirstView },
+	{ label="Agents", defaultFile="icons/icon2.png", overFile="icons/icon2-down.png", width = 32, height = 32, onPress=onSecondView,selected=true  },
 	-- { label="Passports", defaultFile="icons/icon2.png", overFile="icons/icon2-down.png", width = 32, height = 32, onPress=onThirdView },
 	{ label="Black Market", defaultFile="icons/icon2.png", overFile="icons/icon2-down.png", width = 32, height = 32, onPress=onFourthView }
 	}
@@ -109,7 +109,7 @@ function InitTabDisplay()
 	cashTxt:setFillColor(1)
 	statusBarGroup:insert(cashTxt)
 
-	onFirstView()	-- invoke first tab button's onPress event manually
+	onSecondView()	-- invoke first tab button's onPress event manually
 
 	updateStatusBar()
 end
