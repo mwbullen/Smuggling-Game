@@ -1,6 +1,6 @@
 require "sqlite3"
 require "settings"
-require "loadAssets"
+
 
 local  dbPath = system.pathForFile("data.db", system.DocumentsDirectory)
 local db = sqlite3.open(dbPath)
@@ -51,6 +51,7 @@ local function displayAgentRow (event)
       if secondsRemaining > 0 then
           local jobProgress = widget.newProgressView({left = 80, top = 40, width = 190, isAnimated = true })
           row:insert(jobProgress)   
+          table.insert(row.params, jobProgress)
           -- jobs[row.index].progressView = jobProgress
 
           local totalJobSeconds = agentJob.eta - agentJob.starttime 
@@ -78,9 +79,9 @@ local function displayAgentRow (event)
       end 
   end
   
-  local agentPortaitIndex = getAgentPortraitIndex(agents[row.index].id)
+  local agentPortraitIndex = getAgentPortraitIndex(agents[row.index].id)
 
-  local agentPortrait = display.newImage(row, portaitSheet,agentPortaitIndex,0,0)
+  local agentPortrait = display.newImage(row, portraitSheet,agentPortraitIndex,0,0)
   agentPortrait.width= 65
   agentPortrait.height  = 65
   agentPortrait.anchorX = 0
@@ -95,7 +96,7 @@ function getAgentTableView(p_limitToAvailable, p_selectRowFunction, p_limitToReg
     local limitToAvailable = false or p_limitToAvailable
     local limitToRegionid = nil or p_limitToRegionID
 
-    print (limitToRegionid)
+    -- print (limitToRegionid)
     local tableView = widget.newTableView
     {
       onRowRender = displayAgentRow,
@@ -119,9 +120,9 @@ function getAgentTableView(p_limitToAvailable, p_selectRowFunction, p_limitToReg
     -- for row in db:nrows("select * from Agents where Owned = 1")  do
     for index, value in ipairs (agents) do
       tableView:insertRow{ 
-        topPadding=10, bottomPadding=10, rowHeight = 70, rowColor = {default = {.678431, 0.847059,0.901961},
-        params = {agentid = agents[index].id}
-      }
+        topPadding=10, bottomPadding=10, rowHeight = 70, 
+        params = {agentid = agents[index].id},
+        rowColor = {default = {.678431, 0.847059,0.901961}}
     }
     end
 
@@ -154,7 +155,7 @@ function createAgents()
 
   
     local InsertStr = "INSERT INTO AGENTS (AGENTNAME) VALUES ('Ghost')"
-    print (InsertStr)
+    -- print (InsertStr)
     db:exec(InsertStr)
   
 end
@@ -176,7 +177,7 @@ end
 function completeShipment(Jobid)
 	--get cash value of shipment, add to current chash
   local updateStr ="UPDATE PLAYERSTATUS SET CURRENTMONEY = CURRENTMONEY + (SELECT VALUE FROM JOBS WHERE JOBID = "..Jobid..")" 
-  print(updateStr)
+  -- print(updateStr)
 	print(db:exec(updateStr))
 
 
@@ -214,7 +215,7 @@ end
 function getJobInfo(Jobid)
     local selectStr = "SELECT JOBID, AGENTID, (SELECT AGENTNAME FROM AGENTS WHERE AGENTID = JOBS.AGENTID) AGENTNAME, COMPLETE,  (SELECT NAME FROM CITIES WHERE CITYID = ORIGIN) ORIGIN, (SELECT NAME FROM CITIES WHERE CITYID = DESTINATION) DESTINATION, VALUE, ETA, STARTTIME, (SELECT SECURITY FROM CITIES WHERE CITYID = DESTINATION) SECURITY, (SELECT HEAT FROM AGENTS WHERE AGENTID = JOBS.AGENTID) AGENTHEAT, (SELECT MAXHEAT FROM AGENTS WHERE AGENTID = JOBS.AGENTID) AGENTMAXHEAT FROM JOBS WHERE JOBID = "..Jobid
 
-    print(selectStr)
+    -- print(selectStr)
       for row in db:nrows(selectStr)   do
          local Job = 
          {
@@ -239,7 +240,7 @@ end
 function getJobInfoforAgent(p_agentid)
     local selectStr = "SELECT JOBID, AGENTID, (SELECT AGENTNAME FROM AGENTS WHERE AGENTID = JOBS.AGENTID) AGENTNAME, COMPLETE,  (SELECT NAME FROM CITIES WHERE CITYID = ORIGIN) ORIGIN, (SELECT NAME FROM CITIES WHERE CITYID = DESTINATION) DESTINATION, VALUE, ETA, STARTTIME, (SELECT SECURITY FROM CITIES WHERE CITYID = DESTINATION) SECURITY, (SELECT HEAT FROM AGENTS WHERE AGENTID = JOBS.AGENTID) AGENTHEAT, (SELECT MAXHEAT FROM AGENTS WHERE AGENTID = JOBS.AGENTID) AGENTMAXHEAT FROM JOBS WHERE AGENTID = "..p_agentid
     
-      print(selectStr)
+      -- print(selectStr)
       for row in db:nrows(selectStr)   do
          local Job = 
          {
@@ -265,7 +266,7 @@ end
 
 function getsSourceRegionForContract(p_openContractId)
   local selectStr = "SELECT REGIONID FROM CITIES, OPENCONTRACTS WHERE CITIES.CITYID = OPENCONTRACTS.ORIGIN AND OPENCONTRACTS.OPENCONTRACTID = "..p_openContractId
-  print (selectStr)
+  -- print (selectStr)
 
   for row in db:nrows(selectStr) do
       local region = {
@@ -316,7 +317,7 @@ function getAllAvailableAgentsforRegion(p_regionID )
 
   local selectStr = "SELECT * FROM AGENTS WHERE OWNED = 1 AND CITYID IN (SELECT CITYID FROM CITIES WHERE REGIONID = "..p_regionID.." ) AND AGENTID NOT IN (SELECT AGENTID FROM JOBS) "
 
-  print (selectStr)
+  -- print (selectStr)
   for row in db:nrows(selectStr) do
       AGENTS[#AGENTS+1] = 
       {

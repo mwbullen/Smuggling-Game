@@ -13,6 +13,9 @@ local db = sqlite3.open(path)
 
 local composer = require( "composer" )
 local scene = composer.newScene()
+local tableView
+
+local updateTimer
 
 local function selectJobRow(event)	
 	--Confirm ready for customs, if so complete run and get paid
@@ -37,16 +40,44 @@ local function selectJobRow(event)
 end
 
 local function updateJobProgress()
-	for i=1, #agents, 1 do		
-		local totalJobSeconds = agentJob.eta - agentJob.starttime 
-  		local elapsedSeconds = totalJobSeconds - secondsRemaining
-    	local percentComplete = elapsedSeconds / totalJobSeconds
-          
-    	jobProgress:setProgress(percentComplete)	
+	-- for i=1, #agents, 1 do		
+	for i =1, tableView:getNumRows(), 1 do
+		-- print ( tableView:getRowAtIndex(i).params.agentid)
+		local tmp_agentId = tableView:getRowAtIndex(i).params.agentid
+
+		local agentJob = getJobInfoforAgent(tmp_agentId);
+		--get remainingTime for job for agent = tmp_agentId
+		--update progressview child of row?
+
+		if agentJob == nil then
+		else
+			local secondsRemaining = agentJob.eta - os.time()		
+			local totalJobSeconds = agentJob.eta - agentJob.starttime 
+	  		local elapsedSeconds = totalJobSeconds - secondsRemaining
+	    	local percentComplete = elapsedSeconds / totalJobSeconds
+	          
+	        -- local progressView = tableView:getRowAtIndex(i)[10];
+
+	        -- for k, v in pairs( tableView:getRowAtIndex(i).params) do
+	        -- 		print("Tablevalue")
+	        -- 		print (k, v)
+	        -- end
+	        print("update")
+	        if secondsRemaining > 0 then
+		        local progressView = tableView:getRowAtIndex(i).params[1]
+		        -- print ("progressview")
+		        -- print (tableView:getRowAtIndex(i).params)
+
+		         progressView:setProgress(percentComplete)	
+
+		    	-- tableView:getRowAtIndex(i)[10]progressView:setProgress(percentComplete)	
+		    	-- jobProgress:setProgress(percentComplete)	
+	    	end
+    	end 
 	end
 	
 
-	timer.performWithDelay(1000,updateJobProgress)
+	updateTimer = timer.performWithDelay(1000,updateJobProgress)
 end
 
 -----------
@@ -104,7 +135,10 @@ function scene:show( event )
 		tableView = getAgentTableView(false, selectJobRow, nil)
 		sceneGroup:insert(tableView)
 
+		updateJobProgress()
 	end	
+
+	
 end
 
 function scene:hide( event )
@@ -116,7 +150,11 @@ function scene:hide( event )
 		--
 		-- INSERT code here to pause the scene
 		-- e.g. stop timers, stop animation, unload sounds, etc.)
+	
+
 	elseif phase == "did" then
+			print("will hide")
+			timer.cancel(updateTimer)
 		-- Called when the scene is now off screen
 	end
 end

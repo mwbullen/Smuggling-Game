@@ -4,6 +4,7 @@
 --
 -----------------------------------------------------------------------------------------
 require "sqlite3"
+require "loadAssets"
 -- require "functions"
 require "io"
 -- -- show default status bar (iOS)

@@ -7,5 +7,5 @@ local portraitOptions = {
 	sheetContentHeight= 2048
 }
 
-portaitSheet = graphics.newImageSheet("\\art\\portraits\\Portraits_Mix_Shaded.png", portraitOptions)
+portraitSheet = graphics.newImageSheet("\\art\\portraits\\Portraits_Mix_Shaded.png", portraitOptions)
 
