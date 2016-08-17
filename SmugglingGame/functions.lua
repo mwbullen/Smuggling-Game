@@ -101,11 +101,15 @@ local function displayAgentRow (event)
   
   local agentPortraitIndex = getAgentPortraitIndex(agents[row.index].id)
 
-  local agentPortrait = display.newImage(row, portraitSheet,agentPortraitIndex,0,0)
-  agentPortrait.width= 65
-  agentPortrait.height  = 65
-  agentPortrait.anchorX = 0
-  agentPortrait.anchorY = 0
+  if portraitSheet == nil
+  then
+  else
+    local agentPortrait = display.newImage(row, portraitSheet,agentPortraitIndex,0,0)  
+    agentPortrait.width= 65
+    agentPortrait.height  = 65
+    agentPortrait.anchorX = 0
+    agentPortrait.anchorY = 0
+  end
 
 end
 

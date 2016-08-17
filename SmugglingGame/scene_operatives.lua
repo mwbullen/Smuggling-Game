@@ -49,6 +49,10 @@ local function updateJobProgress()
 		--get remainingTime for job for agent = tmp_agentId
 		--update progressview child of row?
 
+		local progressView = tableView:getRowAtIndex(i).params[1]
+		local readyForCustomsbtn =tableView:getRowAtIndex(i).params[2]
+		local remainingTimeTxt =tableView:getRowAtIndex(i).params[3]
+
 		if agentJob == nil then
 		else
 			local secondsRemaining = agentJob.eta - os.time()		
@@ -64,14 +68,21 @@ local function updateJobProgress()
 	        -- end
 	        -- print("update")
 	        if secondsRemaining > 0 then
-		        local progressView = tableView:getRowAtIndex(i).params[1]
+		        readyForCustomsbtn.isVisible = false
 		        -- print ("progressview")
 		        -- print (tableView:getRowAtIndex(i).params)
+		        progressView.isVisible = true
+		        progressView:setProgress(percentComplete)	
 
-		         progressView:setProgress(percentComplete)	
-
+		        remainingTimeTxt.text = string.format("%4.2f",(secondsRemaining/60))
+		        remainingTimeTxt.isVisible = true
 		    	-- tableView:getRowAtIndex(i)[10]progressView:setProgress(percentComplete)	
 		    	-- jobProgress:setProgress(percentComplete)	
+		    	else
+		    	progressView.isVisible = false
+		    	readyForCustomsbtn.isVisible = true
+		    	-- local jobReadyMsg = display.newText(tableView:getRowAtIndex(i), "Ready for Customs",tableView:getRowAtIndex(i).contentWidth/2, 50, nil, 15) 
+         		-- jobReadyMsg:setFillColor(.0,.6,.0)
 	    	end
     	end 
 	end
@@ -137,6 +148,7 @@ function scene:show( event )
 		tableView = getAgentTableView(false, selectJobRow, nil)
 		sceneGroup:insert(tableView)
 
+		updateJobProgress()
 		updateTimer = timer.performWithDelay(1000,updateJobProgress, 0)
 
 	end	
@@ -154,9 +166,12 @@ function scene:hide( event )
 		-- INSERT code here to pause the scene
 		-- e.g. stop timers, stop animation, unload sounds, etc.)
 	
-	elseif phase == "did" then
-			print("will hide")
+			-- print("will hide")
 			timer.cancel(updateTimer)
+	elseif phase == "did" then
+			-- print("did hide")
+			timer.cancel(updateTimer)
+			-- composer.removeScene("scene_operatives", true)
 		-- Called when the scene is now off screen
 	end
 end
