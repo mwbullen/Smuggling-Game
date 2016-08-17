@@ -48,7 +48,7 @@ local function onThirdView( event )
 end
 
 local function onFourthView( event )
-	composer.showOverlay( "scene_blackMarket",{isModal = true} )
+	composer.gotoScene( "scene_blackMarket" )
 end
 --------------
 

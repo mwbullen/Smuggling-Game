@@ -62,7 +62,7 @@ local function updateJobProgress()
 	        -- 		print("Tablevalue")
 	        -- 		print (k, v)
 	        -- end
-	        print("update")
+	        -- print("update")
 	        if secondsRemaining > 0 then
 		        local progressView = tableView:getRowAtIndex(i).params[1]
 		        -- print ("progressview")
@@ -77,7 +77,7 @@ local function updateJobProgress()
 	end
 	
 
-	updateTimer = timer.performWithDelay(1000,updateJobProgress)
+	
 end
 
 -----------
@@ -126,7 +126,9 @@ function scene:show( event )
 	
 	if phase == "will" then
 		-- Called when the scene is still off screen and is about to move on screen
+		-- print("will show")
 	elseif phase == "did" then
+		-- print("did show")
 		-- Called when the scene is now on screen
 		-- 
 		-- INSERT code here to make the scene come alive
@@ -135,7 +137,8 @@ function scene:show( event )
 		tableView = getAgentTableView(false, selectJobRow, nil)
 		sceneGroup:insert(tableView)
 
-		updateJobProgress()
+		updateTimer = timer.performWithDelay(1000,updateJobProgress, 0)
+
 	end	
 
 	
@@ -151,7 +154,6 @@ function scene:hide( event )
 		-- INSERT code here to pause the scene
 		-- e.g. stop timers, stop animation, unload sounds, etc.)
 	
-
 	elseif phase == "did" then
 			print("will hide")
 			timer.cancel(updateTimer)
@@ -161,7 +163,7 @@ end
 
 function scene:destroy( event )
 	local sceneGroup = self.view
-	
+	timer.cancel(updateTimer)
 	-- Called prior to the removal of scene's "view" (sceneGroup)
 	-- 
 	-- INSERT code here to cleanup the scene
