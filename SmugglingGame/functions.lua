@@ -39,6 +39,26 @@ local function displayAgentRow (event)
   -- local agentHeatTxt = display.newText(row, agents[row.index].heat, display.contentWidth-10, 25, nil, 16)
   -- agentHeatTxt.anchorX = 1
   -- agentHeatTxt:setFillColor(.75,0,0)
+
+  local jobProgress = widget.newProgressView({left = 80, top = 40, width = 190, isAnimated = true })
+  row:insert(jobProgress)   
+  table.insert(row.params, jobProgress)
+  jobProgress.isVisible = false
+  
+  local jobReadyMsg = display.newText(row, "Ready for Customs",row.contentWidth/2, 50, nil, 15) 
+  jobReadyMsg:setFillColor(.0,.6,.0)
+  row:insert(jobReadyMsg)   
+  table.insert(row.params, jobReadyMsg)
+  jobReadyMsg.isVisible = false
+
+  local remainingTimeTxt = display.newText("", display.contentWidth - 30, 45, nil, 12)    
+  remainingTimeTxt:setFillColor(0)
+  row:insert(remainingTimeTxt)   
+  table.insert(row.params, remainingTimeTxt)
+
+---------------
+
+
   local agentJob = getJobInfoforAgent(agents[row.index].id)
 
   if agentJob == nil then     --just show current location
@@ -49,20 +69,20 @@ local function displayAgentRow (event)
   else  --show job info
       local secondsRemaining = agentJob.eta - os.time()
       if secondsRemaining > 0 then
-          local jobProgress = widget.newProgressView({left = 80, top = 40, width = 190, isAnimated = true })
-          row:insert(jobProgress)   
-          table.insert(row.params, jobProgress)
-          -- jobs[row.index].progressView = jobProgress
+          -- local jobProgress = widget.newProgressView({left = 80, top = 40, width = 190, isAnimated = true })
+          -- row:insert(jobProgress)   
+          -- table.insert(row.params, jobProgress)
+          -- -- jobs[row.index].progressView = jobProgress
 
-          local totalJobSeconds = agentJob.eta - agentJob.starttime 
-          local elapsedSeconds = totalJobSeconds - secondsRemaining
-          local percentComplete = elapsedSeconds / totalJobSeconds
+          -- local totalJobSeconds = agentJob.eta - agentJob.starttime 
+          -- local elapsedSeconds = totalJobSeconds - secondsRemaining
+          -- local percentComplete = elapsedSeconds / totalJobSeconds
           
-          jobProgress:setProgress(percentComplete)
+          -- jobProgress:setProgress(percentComplete)
 
-          local remainingTimeTxt = display.newText(row,math.round(secondsRemaining/60,2.2).." min", display.contentWidth - 30, 45, nil, 12)
-          -- jobs[row.index].remainingTimeTxt = remainingTimeTxt
-          remainingTimeTxt:setFillColor(0)
+          -- local remainingTimeTxt = display.newText(row,math.round(secondsRemaining/60,2.2).." min", display.contentWidth - 30, 45, nil, 12)
+          -- -- jobs[row.index].remainingTimeTxt = remainingTimeTxt
+          -- remainingTimeTxt:setFillColor(0)
 
           local originTxt = display.newText(row,agentJob.origin, 80, 55, nil, 12)
           originTxt:setFillColor(0)
@@ -73,8 +93,8 @@ local function displayAgentRow (event)
           destTxt.anchorX =1
       
       else
-          local jobReadyMsg = display.newText(row, "Ready for Customs",row.contentWidth/2, 50, nil, 15) 
-          jobReadyMsg:setFillColor(.0,.6,.0)
+          -- local jobReadyMsg = display.newText(row, "Ready for Customs",row.contentWidth/2, 50, nil, 15) 
+          -- jobReadyMsg:setFillColor(.0,.6,.0)
 
       end 
   end
