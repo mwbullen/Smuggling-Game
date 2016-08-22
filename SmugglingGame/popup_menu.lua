@@ -69,7 +69,9 @@ end
 
 
 local function newGameClick(event)
+  closeDB()
    copyFile("data_empty.db", nil, "data.db", system.DocumentsDirectory)
+   openDB()
    InitTabDisplay()     
    composer.hideOverlay()
 end

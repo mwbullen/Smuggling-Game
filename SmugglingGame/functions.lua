@@ -5,7 +5,7 @@ require "settings"
 local  dbPath = system.pathForFile("data.db", system.DocumentsDirectory)
 local db = sqlite3.open(dbPath)
 
-local contractLimit = 6
+local contractLimit = 12
 
 local widget = require "widget"
 
@@ -16,10 +16,17 @@ agents = {}
 function onSystemEvent( event )
   print ("onSystemEvent")
     if ( event.type == "applicationExit" ) then              
-        print(db:close())
+       closeDB()
     end
 end
 
+function closeDB()
+   print(db:close())
+end
+
+function openDB()
+  db = sqlite3.open(dbPath)
+end 
 --------Display objects
 
 local function displayAgentRow (event)
@@ -56,6 +63,19 @@ local function displayAgentRow (event)
   row:insert(remainingTimeTxt)   
   table.insert(row.params, remainingTimeTxt)
 
+  local originTxt = display.newText(row,"", 80, 55, nil, 12)
+  originTxt:setFillColor(0)
+  originTxt.anchorX =0
+  originTxt.isVisible = false
+  table.insert(row.params, originTxt)
+
+  local destTxt = display.newText(row,"", 270, 55, nil, 12)
+  destTxt:setFillColor(0)
+  destTxt.anchorX =1
+  destTxt.isVisible = false
+  table.insert(row.params,destTxt)
+     
+
 ---------------
 
 
@@ -67,36 +87,9 @@ local function displayAgentRow (event)
       agentLocationTxt.anchorX = 1
       agentLocationTxt:setFillColor(0,0,.5)
   else  --show job info
-      local secondsRemaining = agentJob.eta - os.time()
-      if secondsRemaining > 0 then
-          -- local jobProgress = widget.newProgressView({left = 80, top = 40, width = 190, isAnimated = true })
-          -- row:insert(jobProgress)   
-          -- table.insert(row.params, jobProgress)
-          -- -- jobs[row.index].progressView = jobProgress
-
-          -- local totalJobSeconds = agentJob.eta - agentJob.starttime 
-          -- local elapsedSeconds = totalJobSeconds - secondsRemaining
-          -- local percentComplete = elapsedSeconds / totalJobSeconds
-          
-          -- jobProgress:setProgress(percentComplete)
-
-          -- local remainingTimeTxt = display.newText(row,math.round(secondsRemaining/60,2.2).." min", display.contentWidth - 30, 45, nil, 12)
-          -- -- jobs[row.index].remainingTimeTxt = remainingTimeTxt
-          -- remainingTimeTxt:setFillColor(0)
-
-          local originTxt = display.newText(row,agentJob.origin, 80, 55, nil, 12)
-          originTxt:setFillColor(0)
-          originTxt.anchorX =0
-
-          local destTxt = display.newText(row,agentJob.destination, 270, 55, nil, 12)
-          destTxt:setFillColor(0)
-          destTxt.anchorX =1
+      originTxt.text =agentJob.origin          
+      destTxt = agentJob.destination
       
-      else
-          -- local jobReadyMsg = display.newText(row, "Ready for Customs",row.contentWidth/2, 50, nil, 15) 
-          -- jobReadyMsg:setFillColor(.0,.6,.0)
-
-      end 
   end
   
   local agentPortraitIndex = getAgentPortraitIndex(agents[row.index].id)

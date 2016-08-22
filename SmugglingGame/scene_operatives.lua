@@ -52,6 +52,8 @@ local function updateJobProgress()
 		local progressView = tableView:getRowAtIndex(i).params[1]
 		local readyForCustomsbtn =tableView:getRowAtIndex(i).params[2]
 		local remainingTimeTxt =tableView:getRowAtIndex(i).params[3]
+		local originTxt = tableView:getRowAtIndex(i).params[4]
+		local destTxt = tableView:getRowAtIndex(i).params[5]
 
 		if agentJob == nil then
 		else
@@ -68,6 +70,12 @@ local function updateJobProgress()
 	        -- end
 	        -- print("update")
 	        if secondsRemaining > 0 then
+	        	originTxt.isVisible = true
+	        	destTxt.isVisible = true
+
+	        	-- originTxt.text = agentJob.origin
+	        	-- destTxt
+
 		        readyForCustomsbtn.isVisible = false
 		        -- print ("progressview")
 		        -- print (tableView:getRowAtIndex(i).params)
@@ -79,10 +87,13 @@ local function updateJobProgress()
 		    	-- tableView:getRowAtIndex(i)[10]progressView:setProgress(percentComplete)	
 		    	-- jobProgress:setProgress(percentComplete)	
 		    	else
-		    	progressView.isVisible = false
-		    	readyForCustomsbtn.isVisible = true
-		    	-- local jobReadyMsg = display.newText(tableView:getRowAtIndex(i), "Ready for Customs",tableView:getRowAtIndex(i).contentWidth/2, 50, nil, 15) 
-         		-- jobReadyMsg:setFillColor(.0,.6,.0)
+		    		originTxt.isVisible = false
+	        		destTxt.isVisible = false
+
+		    		progressView.isVisible = false
+		    		readyForCustomsbtn.isVisible = true
+		    		-- local jobReadyMsg = display.newText(tableView:getRowAtIndex(i), "Ready for Customs",tableView:getRowAtIndex(i).contentWidth/2, 50, nil, 15) 
+         			-- jobReadyMsg:setFillColor(.0,.6,.0)
 	    	end
     	end 
 	end
