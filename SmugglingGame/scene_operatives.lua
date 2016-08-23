@@ -71,6 +71,7 @@ local function updateJobProgress()
 	        -- print("update")
 	        if secondsRemaining > 0 then
 	        	originTxt.isVisible = true
+	        	
 	        	destTxt.isVisible = true
 
 	        	-- originTxt.text = agentJob.origin

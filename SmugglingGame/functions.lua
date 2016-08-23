@@ -88,7 +88,7 @@ local function displayAgentRow (event)
       agentLocationTxt:setFillColor(0,0,.5)
   else  --show job info
       originTxt.text =agentJob.origin          
-      destTxt = agentJob.destination
+      destTxt.text = agentJob.destination
       
   end
   
