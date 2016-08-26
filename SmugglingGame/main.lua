@@ -5,7 +5,7 @@
 -----------------------------------------------------------------------------------------
 require "sqlite3"
 require "loadAssets"
--- require "functions"
+require "functions"
 require "io"
 -- -- show default status bar (iOS)
 display.setStatusBar( display.DefaultStatusBar )
@@ -69,7 +69,7 @@ end
 -- create the actual tabBar widget
 
 function InitTabDisplay() 
-	require "functions"
+	
 
 	Runtime:addEventListener( "system", onSystemEvent )
 	
@@ -112,6 +112,7 @@ function InitTabDisplay()
 
 	onSecondView()	-- invoke first tab button's onPress event manually
 
+	openDB()
 	updateStatusBar()
 end
 

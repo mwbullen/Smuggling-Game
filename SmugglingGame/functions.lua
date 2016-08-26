@@ -3,8 +3,9 @@ require "settings"
 
 
 local  dbPath = system.pathForFile("data.db", system.DocumentsDirectory)
-local db = sqlite3.open(dbPath)
+local db 
 
+local dbOpen = false
 local contractLimit = 12
 
 local widget = require "widget"
@@ -21,12 +22,34 @@ function onSystemEvent( event )
 end
 
 function closeDB()
-   print(db:close())
+   if dbOpen == true then 
+    print("closing db")
+     db:close()
+     dbOpen = false
+    end
 end
 
 function openDB()
-  db = sqlite3.open(dbPath)
+    if dbOpen == false then
+      db = sqlite3.open(dbPath)
+      dbOpen = true
+    end
 end 
+
+function  newGame( )
+   closeDB()
+
+   db = nil
+   dbPath = nil
+   
+   os.remove(system.pathForFile("data.db", system.DocumentsDirectory))
+
+   dbPath = system.pathForFile("data.db", system.DocumentsDirectory)
+
+   copyFile("data_empty.db", nil, "data.db", system.DocumentsDirectory)
+   openDB()
+   
+end
 --------Display objects
 
 local function displayAgentRow (event)
@@ -180,6 +203,7 @@ end
 
 ----------Money operations
 function getCurrentCash() 	
+  openDB()
 	for row in db:nrows("SELECT CURRENTMONEY FROM PLAYERSTATUS") do
 			return row.CURRENTMONEY
 	end
